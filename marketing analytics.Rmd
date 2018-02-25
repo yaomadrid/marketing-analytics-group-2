@@ -16,13 +16,27 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 summary(car)
-
+1111
 ```
 
 3. Create a table summarizing the range or variation in each variable. Add statistics (mean,
 median, standard deviation, etc.) as you deem necessary.
 
                                         Actions in loans
+```{r}
+
+
+```
+
+
+4. How do you handle missing data in this dataset?
+```{r}
+
+```
+
+
+5. Provide histograms/density plots for key variables, such as action taken on loan, gender,
+ethnicity, etc.
 ```{r}
 library(dplyr)
 ny_hmda_possessed = ny_hmda %>%
@@ -33,17 +47,6 @@ library(ggplot2)
 ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="white")+labs( title = 'Actions in Loans')
 
 ```
-
-
-4. How do you handle missing data in this dataset?
-```{r}
-111
-
-```
-
-
-5. Provide histograms/density plots for key variables, such as action taken on loan, gender,
-ethnicity, etc.
 
 6. Create bivariate frequency distributions (tables or plots) for key variables.
 
