@@ -22,7 +22,7 @@ summary(car)
 3. Create a table summarizing the range or variation in each variable. Add statistics (mean,
 median, standard deviation, etc.) as you deem necessary.
 
-                                        Actions in loans
+                                       
 ```{r}
 
 
@@ -37,6 +37,9 @@ median, standard deviation, etc.) as you deem necessary.
 
 5. Provide histograms/density plots for key variables, such as action taken on loan, gender,
 ethnicity, etc.
+
+Action in Loans
+
 ```{r}
 library(dplyr)
 ny_hmda_possessed = ny_hmda %>%
@@ -44,11 +47,50 @@ group_by(action_taken_name) %>%
 summarize(TotalActionTaken = n()) %>%
 mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
 library(ggplot2)
-ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="white")+labs( title = 'Actions in Loans')
+ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="white")+labs( title = 'Actions in Loans')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 ```
 
-6. Create bivariate frequency distributions (tables or plots) for key variables.
+
+
+Hustogram of Income
+```{r}
+library(dplyr)
+ny_hmdaIncome <-ny_hmda %>%
+  filter(!is.na(hud_median_family_income)) 
+plot(density(ny_hmdaIncome$hud_median_family_income), main = "Histogram of income", 
+    xlab = "Income", ylab = "Count (#)")
+```
+
+
+Action in Loans by Sex
+```{r}
+ny_hmdaSex= ny_hmda %>%
+  filter(applicant_sex < 3) %>%
+  group_by(applicant_sex_name) %>%
+  summarize(TotalActionTaken = n()) %>%
+  mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
+library(ggplot2)
+ggplot(ny_hmdaSex, aes(x = applicant_sex_name ,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'Actions in Loans')
+
+
+
+```
+
+Action in Loans by Race
+```{r}
+ny_hmdaRace= ny_hmda %>%
+  filter(applicant_race_1 < 7 )%>%
+  group_by(applicant_race_name_1) %>%
+  summarize(TotalActionTaken = n()) %>%
+  mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
+ny_hmdaRace
+library(ggplot2)
+ggplot(ny_hmdaRace, aes(x = applicant_race_name_1,(angle=30) ,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'Actions in Loans by race')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+```
+
+6. Create bivariate frequency distributions (tables or plots) for key variables. 1
 
 7. Discuss what the data patterns indicate, and what this could mean for the probability of
 getting a loan approved.
