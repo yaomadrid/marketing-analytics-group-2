@@ -37,7 +37,7 @@ ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+
 
 4. How do you handle missing data in this dataset?
 ```{r}
-1
+11
 
 ```
 
