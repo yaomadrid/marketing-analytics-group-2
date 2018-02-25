@@ -11,23 +11,35 @@ knitr::opts_chunk$set(echo = TRUE)
 
 2.Describe the measurement types of each variable
 
-```{r cars}
-summary(cars)
-library(ggplot2)
-888
 
+
+
+```{r}
+summary(car)
 
 ```
 
 3. Create a table summarizing the range or variation in each variable. Add statistics (mean,
 median, standard deviation, etc.) as you deem necessary.
 
+                                        Actions in loans
+```{r}
+library(dplyr)
+ny_hmda_possessed = ny_hmda %>%
+group_by(action_taken_name) %>%
+summarize(TotalActionTaken = n()) %>%
+mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
+library(ggplot2)
+ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="white")+labs( title = 'Actions in Loans')
 
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
+
 4. How do you handle missing data in this dataset?
+```{r}
+1
+
+```
 
 
 5. Provide histograms/density plots for key variables, such as action taken on loan, gender,
