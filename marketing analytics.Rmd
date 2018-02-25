@@ -16,6 +16,7 @@ summary(cars)
 library(ggplot2)
 888
 
+
 ```
 
 3. Create a table summarizing the range or variation in each variable. Add statistics (mean,
