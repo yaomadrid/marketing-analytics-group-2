@@ -101,6 +101,77 @@ ggplot(ny_hmdaRace, aes(x = applicant_race_name_1,(angle=30) ,y = PercentageActi
 
 ```
 
+Preapproval
+```{r}
+ny_hmda_preapproval= ny_hmda %>%
+group_by(preapproval_name) %>%
+summarize(TotalActionTaken = n()) %>%
+mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
+homeMortgage_preapproval
+ggplot(ny_hmda_preapproval, aes(x = preapproval_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs( title = 'Percentage of Loans by Preapproval')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+```
+
+
+Owner Occupancy Graph
+```{r}
+ny_hmda_occupancy= ny_hmda %>%
+    group_by(owner_occupancy_name) %>%
+    summarize(TotalActionTaken = n()) %>%
+    mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
+homeMortgage_race
+library(ggplot2)
+ggplot(ny_hmda_occupancy, aes(x = owner_occupancy_name,(angle=30) ,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs( title = 'Percentage of Loans by Owner Occupancy')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+Lien Status
+```{r}
+ny_hmda_lien = ny_hmda %>% 
+  group_by(lien_status_name) %>%
+  summarise(CountOfLien = n()) %>%
+  arrange(desc(CountOfLien))
+
+ggplot(ny_hmda_lien, aes(x = reorder(lien_status_name, CountOfLien), 
+                              y = CountOfLien)) +
+  geom_bar(stat='identity',colour="white", fill =fillColor2) +
+  geom_text(aes(x = lien_status_name, y = 1, label = paste0("(",round(CountOfLien),")",sep="")),
+            hjust=0, vjust=.5, size = 4, colour = 'black',
+            fontface = 'bold') +
+  labs(x = 'Lien Status Name', y = '%age Count Of Action Taken', title = 'Actions in Loans') +
+  coord_flip() + 
+  theme_bw()
+```
+
+loan purpose
+```{r}
+ny_hmda_purpose= ny_hmda %>% 
+  group_by(loan_purpose_name) %>%
+  summarise(CountOfLoanPurpose = n()) %>%
+  arrange(desc(CountOfLoanPurpose))
+
+ggplot(ny_hmda_purpose, aes(x = reorder(loan_purpose_name, CountOfLoanPurpose), 
+                                     y = CountOfLoanPurpose)) +
+  geom_bar(stat='identity',colour="white", fill =fillColor2) +
+  geom_text(aes(x = loan_purpose_name, y = 1, label = paste0("(",round(CountOfLoanPurpose),")",sep="")),
+            hjust=0, vjust=.5, size = 4, colour = 'black',
+            fontface = 'bold') +
+  labs(x = 'loan_purpose_name', y = '%age Count Of Action Taken', title = 'Actions in Loans') +
+  coord_flip() + 
+  theme_bw()
+
+```
+
+
+Loan Types
+```{r}
+ny_hmda_type= ny_hmda %>%
+filter(!is.na(loan_type_name)) %>%
+  group_by() %>%
+  summarize(TotalActionTaken = n()) %>%
+  mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
+ggplot(ny_hmda_preapproval, aes(x = preapproval_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs( title = 'Percentage of Loans by Preapproval')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+```
 6. Create bivariate frequency distributions (tables or plots) for key variables. 
 
 Lean_status distribution by actions
