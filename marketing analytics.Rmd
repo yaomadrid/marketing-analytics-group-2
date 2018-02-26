@@ -62,8 +62,16 @@ plot(density(ny_hmdaIncome$hud_median_family_income), main = "Histogram of incom
     xlab = "Income", ylab = "Count (#)")
 ```
 
+Minority_population distribution
+```{r}
+library(dplyr)
+ny_hm_minority_population <-ny_hmda %>%
+  filter(!is.na(minority_population)) 
+plot(density(ny_hm_minority_population$minority_population), main = "Minority_population", 
+     xlab = "Minority", ylab = "Count (#)")
 
-Action in Loans by Sex
+```
+
 ```{r}
 ny_hmdaSex= ny_hmda %>%
   filter(applicant_sex < 3) %>%
@@ -148,3 +156,4 @@ summary(car)
 ```
 7. Discuss what the data patterns indicate, and what this could mean for the probability of
 getting a loan approved.
+
