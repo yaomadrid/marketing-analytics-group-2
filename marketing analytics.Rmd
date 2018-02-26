@@ -2,15 +2,14 @@ url: https://github.com/yaomadrid/marketing-analytics-group-2.git
 title: "Marketing Analytics"
 output: word_document
 
-1. What is the data problem? What is the final managerial objective?
-
-Our dataset covers all mortgage information in 2015 for the state of New York, provided by financial institutions. These information were required by Home Mortgage Disclosure Act (HMDA), which unveils all information of mortgage decisions and helps public to make loan decisions. Our final managerial objective is to find out the factors that influence the approval of mortgage and predict mortgage decision based on our model. 
-
-```{r }
 ny_hmda = read.csv("ny_hmda_2015.csv")
 library(dplyr)
 library(ggplot2)
-```
+
+
+1. What is the data problem? What is the final managerial objective?
+
+Our dataset covers all mortgage information in 2015 for the state of New York, provided by financial institutions. These information were required by Home Mortgage Disclosure Act (HMDA), which unveils all information of mortgage decisions and helps public to make loan decisions. Our final managerial objective is to find out the factors that influence the approval of mortgage and predict mortgage decision based on our model. 
 
 2.Describe the measurement types of each variable
 
@@ -98,11 +97,7 @@ There are 78 variables and 439654 observations in this dataset, however, a lot o
 Since there are 439654 observations in total, we could directly delete those variables with more than 10 thousand missing values as they are less informative.  For those numeric variables, we could replace the missing value with the mean value of the variable. For those character variable, we could replace the missing value with the mode of the variable.
 
 
-5. Provide histograms/density plots for key variables, such as action taken on loan, gender,
-ethnicity, etc.
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+5. Provide histograms/density plots for key variables, such as action taken on loan, gender, ethnicity, etc.
 
 Action in Loans
 
@@ -138,6 +133,8 @@ plot(density(ny_hm_minority_population$minority_population), main = "Minority_po
 
 ```
 
+
+Actions in Loans by Gender
 ```{r}
 ny_hmdaSex= ny_hmda %>%
   filter(applicant_sex < 3) %>%
