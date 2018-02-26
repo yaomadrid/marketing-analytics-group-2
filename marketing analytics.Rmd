@@ -117,5 +117,18 @@ ggplot(ny_hmdaRace_status, aes(x = action_taken_name,y = TotalActionTaken))+ geo
 
 ```
 
+Loans Purpose Types Distribution
+
+```{r }
+  ny_hmda %>%
+  filter(!is.na(loan_purpose_name)) %>%
+  group_by(loan_purpose_name,action_taken_name) %>%
+  summarise(CountLoanPurpose = n() ) %>%
+  ggplot(aes(x = action_taken_name,y = CountLoanPurpose,fill =(loan_purpose_name))) +
+  geom_bar(stat='identity',colour="white") +
+  labs(x = 'Loan Purpose', y = 'Count', title = 'Loans Purpose Types Distribution with Action Types') +
+  theme_bw()+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
 7. Discuss what the data patterns indicate, and what this could mean for the probability of
 getting a loan approved.
