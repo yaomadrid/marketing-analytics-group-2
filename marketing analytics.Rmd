@@ -32,6 +32,9 @@ plot(pressure)
 
 5. Provide histograms/density plots for key variables, such as action taken on loan, gender,
 ethnicity, etc.
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
 
 6. Create bivariate frequency distributions (tables or plots) for key variables.
 
