@@ -103,5 +103,19 @@ ggplot(ny_hmdaLean_status, aes(x = action_taken_name,y = TotalActionTaken))+ geo
               
 ```
 
+
+
+```{r}
+ny_hmdaRace_status=ny_hmda %>%
+  filter(applicant_race_1 < 7 )%>%
+  group_by(applicant_race_name_1, action_taken_name) %>%
+  summarize(TotalActionTaken = n()) 
+ny_hmdaRace_status
+ggplot(ny_hmdaRace_status, aes(x = action_taken_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = ' race destribution by loan actions')+ facet_wrap(~ applicant_race_name_1 , scales ="free_y")+ theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+
+
+```
+
 7. Discuss what the data patterns indicate, and what this could mean for the probability of
 getting a loan approved.
