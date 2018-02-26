@@ -130,5 +130,21 @@ Loans Purpose Types Distribution with Action Types
   theme_bw()+theme(axis.text.x = element_text(angle = 30, hjust = 1))
 ```
 
+Relationship between Applicant Income level and Action of Loans
+
+```{r }
+ny_hmda_income =  ny_hmda %>%
+filter(!is.na(applicant_income_000s)) 
+ny_hmda_income$Income.Level = "0"
+ny_hmda_income[ny_hmda_income$applicant_income_000s <= 60,]$Income.Level = "Level1"
+ny_hmda_income[ny_hmda_income$applicant_income_000s > 60 & ny_hmda_income$applicant_income_000s <=90,]$Income.Level = "Level2"
+ny_hmda_income[ny_hmda_income$applicant_income_000s > 90 & ny_hmda_income$applicant_income_000s <=150,]$Income.Level = "Level3"
+ny_hmda_income[ny_hmda_income$applicant_income_000s > 150,]$Income.Level = "Level4"
+table(ny_hmda_income$action_taken_name,ny_hmda_income$Income.Level)
+```
+```{r}
+summary(car)
+1111
+```
 7. Discuss what the data patterns indicate, and what this could mean for the probability of
 getting a loan approved.
