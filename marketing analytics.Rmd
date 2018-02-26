@@ -89,7 +89,7 @@ library(ggplot2)
 ggplot(ny_hmdaRace, aes(x = applicant_race_name_1,(angle=30) ,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'Actions in Loans by race')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 ```
-1
+11
 6. Create bivariate frequency distributions (tables or plots) for key variables. 
 Lean_status distribution by actions
 ```{r}
