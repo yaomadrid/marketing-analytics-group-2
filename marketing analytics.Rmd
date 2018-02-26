@@ -241,14 +241,14 @@ ggplot(ny_hmda_preapproval, aes(x = preapproval_name,y = PercentageActionTaken))
 
 6. Create bivariate frequency distributions (tables or plots) for key variables. 
 
-Lean_status distribution by actions
+Lien_status distribution by actions
 
 ```{r}
 ny_hmdaLean_status=ny_hmda %>%
 group_by(lien_status_name, action_taken_name) %>%
 summarize(TotalActionTaken = n()) 
 ny_hmdaLean_status
-ggplot(ny_hmdaLean_status, aes(x = action_taken_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'lean_status distribution by actions')+facet_wrap(~ lien_status_name, scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+ggplot(ny_hmdaLean_status, aes(x = action_taken_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'lien_status distribution by actions')+facet_wrap(~ lien_status_name, scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))
               
 ```
 
