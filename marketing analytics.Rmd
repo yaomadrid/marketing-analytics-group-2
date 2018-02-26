@@ -8,8 +8,8 @@ title: "Marketing Analytics"
 output: word_document
 
 ```{r}
-setwd("~/Desktop/2018 spring/market analytics")
-ny_hmda = read.csv("ny_hmda_2015.csv")
+library(readr)
+ny_hmda <- read_csv("Data/ny_hmda_2015.csv")
 library(dplyr)
 library(ggplot2)
 
@@ -25,46 +25,46 @@ Our dataset covers all mortgage information in 2015 for the state of New York, p
 
 There are 78 variables in this original dataset, though there are some redundant variables which deliver the same information. We can classify these variables into applicants, loan, lender, property type, location.
 
-Variable name 	Measurement type     	Variable name 	     Measurement type
-action_taken	Nominal            	    denial_reason_1	     Nominal 
-action_taken_name	Nominal       	    denial_reason_2      Nominal 
-agency_code	Nominal 	                denial_reason_3	      Nominal 
-agency_abbr	Nominal 	                denial_reason_name_1	Nominal 
-agency_name	Nominal 	                denial_reason_name_2	Nominal 
-applicant_ethnicity	Nominal 	        denial_reason_name_3	Nominal 
-applicant_ethnicity_name	Nominal 	  edit_status	          Nominal 
-applicant_income_000s	Ratio	          edit_status_name	   Nominal 
-applicant_race_1	Nominal 	          hoepa_status	       Nominal 
-applicant_race_2	Nominal 	          hoepa_status_name	   Nominal 
-applicant_race_3	Nominal 	          lien_status	         Nominal 
-applicant_race_4	Nominal 	          lien_status_name    	Nominal 
-applicant_race_5	Nominal 	          loan_purpose	        Nominal 
-applicant_race_name_1	Nominal 	      loan_purpose_name	    Nominal 
-applicant_race_name_2	Nominal       	loan_type	            Nominal 
-applicant_race_name_3	Nominal 	      loan_type_name	       Nominal 
-applicant_race_name_4	Nominal 	      msamd	                Nominal 
-applicant_race_name_5	Nominal 	      msamd_name	           Nominal 
-applicant_sex	Nominal 	              owner_occupancy	       Nominal 
-applicant_sex_name	Nominal 	        owner_occupancy_name	Nominal 
-application_date_indicator	Ordinal 	preapproval	          Nominal 
-as_of_year	Ordinal	                  preapproval_name	    Nominal 
-census_tract_number	Nominal 	        property_type	        Nominal 
-co_applicant_ethnicity	Nominal     	property_type_name	  Nominal 
-co_applicant_ethnicity_name	Nominal 	purchaser_type	      Nominal 
-co_applicant_race_1	Nominal 	        purchaser_type_name	  Nominal 
-co_applicant_race_2	Nominal         	respondent_id	        Nominal 
-co_applicant_race_3	Nominal 	        sequence_number	      Ordinal
-co_applicant_race_4	Nominal 	        state_code	           Nominal 
-co_applicant_race_5	Nominal 	        state_abbr           	Nominal 
-co_applicant_race_name_1	Nominal 	  state_name	          Nominal 
-co_applicant_race_name_2	Nominal 	  hud_median_family_income	Ratio
-co_applicant_race_name_3	Nominal    loan_amount_000s	Ratio
-co_applicant_race_name_4	Nominal   number_of_1_to_4_family_units	Ratio
+Variable name 	Measurement type	Variable name 	Measurement type
+action_taken	Nominal 	denial_reason_1	Nominal 
+action_taken_name	Nominal 	denial_reason_2	Nominal 
+agency_code	Nominal 	denial_reason_3	Nominal 
+agency_abbr	Nominal 	denial_reason_name_1	Nominal 
+agency_name	Nominal 	denial_reason_name_2	Nominal 
+applicant_ethnicity	Nominal 	denial_reason_name_3	Nominal 
+applicant_ethnicity_name	Nominal 	edit_status	Nominal 
+applicant_income_000s	Ratio	edit_status_name	Nominal 
+applicant_race_1	Nominal 	hoepa_status	Nominal 
+applicant_race_2	Nominal 	hoepa_status_name	Nominal 
+applicant_race_3	Nominal 	lien_status	Nominal 
+applicant_race_4	Nominal 	lien_status_name	Nominal 
+applicant_race_5	Nominal 	loan_purpose	Nominal 
+applicant_race_name_1	Nominal 	loan_purpose_name	Nominal 
+applicant_race_name_2	Nominal 	loan_type	Nominal 
+applicant_race_name_3	Nominal 	loan_type_name	Nominal 
+applicant_race_name_4	Nominal 	msamd	Nominal 
+applicant_race_name_5	Nominal 	msamd_name	Nominal 
+applicant_sex	Nominal 	owner_occupancy	Nominal 
+applicant_sex_name	Nominal 	owner_occupancy_name	Nominal 
+application_date_indicator	Ordinal 	preapproval	Nominal 
+as_of_year	Ordinal	preapproval_name	Nominal 
+census_tract_number	Nominal 	property_type	Nominal 
+co_applicant_ethnicity	Nominal 	property_type_name	Nominal 
+co_applicant_ethnicity_name	Nominal 	purchaser_type	Nominal 
+co_applicant_race_1	Nominal 	purchaser_type_name	Nominal 
+co_applicant_race_2	Nominal 	respondent_id	Nominal 
+co_applicant_race_3	Nominal 	sequence_number	Ordinal
+co_applicant_race_4	Nominal 	state_code	Nominal 
+co_applicant_race_5	Nominal 	state_abbr	Nominal 
+co_applicant_race_name_1	Nominal 	state_name	Nominal 
+co_applicant_race_name_2	Nominal 	hud_median_family_income	Ratio
+co_applicant_race_name_3	Nominal 	loan_amount_000s	Ratio
+co_applicant_race_name_4	Nominal 	number_of_1_to_4_family_units	Ratio
 co_applicant_race_name_5	Nominal 	number_of_owner_occupied_units	Ratio
-co_applicant_sex	Nominal 	        minority_population	         Ratio
-co_applicant_sex_name	Nominal      	population                	Ratio
-county_code	Nominal 	             rate_spread	               Ratio
-county_name	Nominal               	tract_to_msamd_income    	Ratio
+co_applicant_sex	Nominal 	minority_population	Ratio
+co_applicant_sex_name	Nominal 	population	Ratio
+county_code	Nominal 	rate_spread	Ratio
+county_name	Nominal 	tract_to_msamd_income	Ratio
 
 
 
