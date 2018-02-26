@@ -103,7 +103,7 @@ ggplot(ny_hmdaLean_status, aes(x = action_taken_name,y = TotalActionTaken))+ geo
               
 ```
 
-
+Loans Purpose Types Distribution with Race
 
 ```{r}
 ny_hmdaRace_status=ny_hmda %>%
@@ -117,7 +117,7 @@ ggplot(ny_hmdaRace_status, aes(x = action_taken_name,y = TotalActionTaken))+ geo
 
 ```
 
-Loans Purpose Types Distribution
+Loans Purpose Types Distribution with Action Types
 
 ```{r }
   ny_hmda %>%
