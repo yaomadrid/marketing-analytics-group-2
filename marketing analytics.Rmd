@@ -89,9 +89,11 @@ library(ggplot2)
 ggplot(ny_hmdaRace, aes(x = applicant_race_name_1,(angle=30) ,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'Actions in Loans by race')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 ```
-11
+
 6. Create bivariate frequency distributions (tables or plots) for key variables. 
+
 Lean_status distribution by actions
+
 ```{r}
 ny_hmdaLean_status=ny_hmda %>%
 group_by(lien_status_name, action_taken_name) %>%
@@ -99,7 +101,6 @@ summarize(TotalActionTaken = n())
 ny_hmdaLean_status
 ggplot(ny_hmdaLean_status, aes(x = action_taken_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'lean_status distribution by actions')+facet_wrap(~ lien_status_name, scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))
               
-
 ```
 
 7. Discuss what the data patterns indicate, and what this could mean for the probability of
