@@ -21,7 +21,6 @@ library(ggplot2)
 Our dataset covers all mortgage information in 2015 for the state of New York, provided by financial institutions. These information were required by Home Mortgage Disclosure Act (HMDA), which unveils all information of mortgage decisions and helps public to make loan decisions. Our final managerial objective is to find out the factors that influence the approval of mortgage and predict mortgage decision based on our model. 
 
 
-
 2.Describe the measurement types of each variable
 
 There are 78 variables in this original dataset, though there are some redundant variables which deliver the same information. We can classify these variables into applicants, loan, lender, property type, location.
