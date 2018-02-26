@@ -97,6 +97,8 @@ There are 78 variables and 439654 observations in this dataset, however, a lot o
 
 Since there are 439654 observations in total, we could directly delete those variables with more than 10 thousand missing values as they are less informative.  For those numeric variables, we could replace the missing value with the mean value of the variable. For those character variable, we could replace the missing value with the mode of the variable.
 
+There is another problem about missing data in this specific dataset. Missing values in some variables are not labeled as "N/A" but as a specific number, such as "3". As for this problem, we could first filter the missing value then mutate it into a mean or mode of the variable.
+
 
 5. Provide histograms/density plots for key variables, such as action taken on loan, gender,
 ethnicity, etc.
