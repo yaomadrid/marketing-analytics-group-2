@@ -7,33 +7,95 @@ output: word_document
 Our dataset covers all mortgage information in 2015 for the state of New York, provided by financial institutions. These information were required by Home Mortgage Disclosure Act (HMDA), which unveils all information of mortgage decisions and helps public to make loan decisions. Our final managerial objective is to find out the factors that influence the approval of mortgage and predict mortgage decision based on our model. 
 
 ```{r }
-
+ny_hmda = read.csv("ny_hmda_2015.csv")
+library(dplyr)
+library(ggplot2)
 ```
 
 2.Describe the measurement types of each variable
 
+There are 78 variables in this original dataset, though there are some redundant variables which deliver the same information. We can classify these variables into applicants, loan, lender, property type, location.
+
+Variable name 	Measurement type     	Variable name 	     Measurement type
+action_taken	Nominal            	    denial_reason_1	     Nominal 
+action_taken_name	Nominal       	    denial_reason_2      Nominal 
+agency_code	Nominal 	                denial_reason_3	      Nominal 
+agency_abbr	Nominal 	                denial_reason_name_1	Nominal 
+agency_name	Nominal 	                denial_reason_name_2	Nominal 
+applicant_ethnicity	Nominal 	        denial_reason_name_3	Nominal 
+applicant_ethnicity_name	Nominal 	  edit_status	          Nominal 
+applicant_income_000s	Ratio	          edit_status_name	   Nominal 
+applicant_race_1	Nominal 	          hoepa_status	       Nominal 
+applicant_race_2	Nominal 	          hoepa_status_name	   Nominal 
+applicant_race_3	Nominal 	          lien_status	         Nominal 
+applicant_race_4	Nominal 	          lien_status_name    	Nominal 
+applicant_race_5	Nominal 	          loan_purpose	        Nominal 
+applicant_race_name_1	Nominal 	      loan_purpose_name	    Nominal 
+applicant_race_name_2	Nominal       	loan_type	            Nominal 
+applicant_race_name_3	Nominal 	      loan_type_name	       Nominal 
+applicant_race_name_4	Nominal 	      msamd	                Nominal 
+applicant_race_name_5	Nominal 	      msamd_name	           Nominal 
+applicant_sex	Nominal 	              owner_occupancy	       Nominal 
+applicant_sex_name	Nominal 	        owner_occupancy_name	Nominal 
+application_date_indicator	Ordinal 	preapproval	          Nominal 
+as_of_year	Ordinal	                  preapproval_name	    Nominal 
+census_tract_number	Nominal 	        property_type	        Nominal 
+co_applicant_ethnicity	Nominal     	property_type_name	  Nominal 
+co_applicant_ethnicity_name	Nominal 	purchaser_type	      Nominal 
+co_applicant_race_1	Nominal 	        purchaser_type_name	  Nominal 
+co_applicant_race_2	Nominal         	respondent_id	        Nominal 
+co_applicant_race_3	Nominal 	        sequence_number	      Ordinal
+co_applicant_race_4	Nominal 	        state_code	           Nominal 
+co_applicant_race_5	Nominal 	        state_abbr           	Nominal 
+co_applicant_race_name_1	Nominal 	  state_name	          Nominal 
+co_applicant_race_name_2	Nominal 	  hud_median_family_income	Ratio
+co_applicant_race_name_3	Nominal    loan_amount_000s	Ratio
+co_applicant_race_name_4	Nominal   number_of_1_to_4_family_units	Ratio
+co_applicant_race_name_5	Nominal 	number_of_owner_occupied_units	Ratio
+co_applicant_sex	Nominal 	        minority_population	         Ratio
+co_applicant_sex_name	Nominal      	population                	Ratio
+county_code	Nominal 	             rate_spread	               Ratio
+county_name	Nominal               	tract_to_msamd_income    	Ratio
 
 
 
-```{r}
-summary(car)
-1111
-```
+3. Create a table summarizing the range or variation in each variable. Add statistics (mean,median, standard deviation, etc.) as you deem necessary.
 
-3. Create a table summarizing the range or variation in each variable. Add statistics (mean,
-median, standard deviation, etc.) as you deem necessary.
+We could first inspect the range or variation of each variable, leaving out character variables. Even Though the value of nominal variable is meaningless, we could take a glance at the distributions of these variables through summarizing them. As for numeric variables, we could know more about their features through descriptive statistics.
+
 
                                        
 ```{r}
-
+ny_hmda$applicant_race_3<-as.numeric(ny_hmda$applicant_race_3)
+ny_hmda$applicant_race_4<-as.numeric(ny_hmda$applicant_race_4)
+ny_hmda$applicant_race_5<-as.numeric(ny_hmda$applicant_race_5)
+ny_hmda$census_tract_number<-as.numeric(ny_hmda$census_tract_number)
+ny_hmda$co_applicant_race_3<-as.numeric(ny_hmda$applicant_race_3)
+ny_hmda$co_applicant_race_4<-as.numeric(ny_hmda$applicant_race_4)
+ny_hmda$co_applicant_race_5<-as.numeric(ny_hmda$applicant_race_5)
+ny_hmda$denial_reason_1<-as.numeric(ny_hmda$denial_reason_1)
+ny_hmda$denial_reason_2<-as.numeric(ny_hmda$denial_reason_2)
+ny_hmda$denial_reason_3<-as.numeric(ny_hmda$denial_reason_3)
+ny_hmda$respondent_id<-as.numeric(ny_hmda$respondent_id)
+ny_hmda$sequence_number<-as.numeric(ny_hmda$sequence_number)
+ny_hmda$rate_spread<-as.numeric(ny_hmda$rate_spread)
+summary(ny_hmda)
+sd(ny_hmda$applicant_income_000s, na.rm = TRUE)
+sd(ny_hmda$hud_median_family_income, na.rm = TRUE)
+sd(ny_hmda$number_of_1_to_4_family_units, na.rm = TRUE)
+sd(ny_hmda$number_of_owner_occupied_units, na.rm = TRUE)
+sd(ny_hmda$population, na.rm = TRUE)
+sd(ny_hmda$minority_population, na.rm = TRUE)
+sd(ny_hmda$tract_to_msamd_income, na.rm = TRUE)
 
 ```
 
 
 4. How do you handle missing data in this dataset?
-```{r}
 
-```
+There are 78 variables and 439654 observations in this dataset, however, a lot of variables contains a large number of missing data. There are basically two way to solve the missing data problem: delete the variables with missing data or mutate missing data into specific value. 
+
+Since there are 439654 observations in total, we could directly delete those variables with more than 10 thousand missing values as they are less informative.  For those numeric variables, we could replace the missing value with the mean value of the variable. For those character variable, we could replace the missing value with the mode of the variable.
 
 
 5. Provide histograms/density plots for key variables, such as action taken on loan, gender,
@@ -57,7 +119,7 @@ ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+
 
 
 
-Hustogram of Income
+Histogram of Income
 ```{r}
 library(dplyr)
 ny_hmdaIncome <-ny_hmda %>%
@@ -173,6 +235,8 @@ filter(!is.na(loan_type_name)) %>%
 ggplot(ny_hmda_preapproval, aes(x = preapproval_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs( title = 'Percentage of Loans by Preapproval')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 ```
+
+
 6. Create bivariate frequency distributions (tables or plots) for key variables. 
 
 Lean_status distribution by actions
@@ -229,6 +293,13 @@ table(ny_hmda_income$action_taken_name,ny_hmda_income$Income.Level)
 summary(car)
 1111
 ```
-7. Discuss what the data patterns indicate, and what this could mean for the probability of
-getting a loan approved.
+
+
+7. Discuss what the data patterns indicate, and what this could mean for the probability of getting a loan approved.
+
+While doing our data research, we looked at several key variables that we thought would be useful in determining the probability of getting a home loan approved. The feature of loan itself is a crucial factor that determines the approval of mortgage. One of these variables was whether the loan needed to be pre approved.  In over 80% of cases, loans did not require a pre approval.  This means that buyers nervous about whether or not there loans would be preapproved before buying would not need to consider this issue. This may impact riskier buyers such more low-income home purchasers where loan preapproval is a prerequisite to determine the creditworthiness to purchase a home. Looking at purchase types, 90% of loans were either for home purchases (50%) or refinancing (40%), while only 10% were for Home improvement.  This could mean that loans that are more common, such as home purchase or refinancing, could be easier to get approved by a bank as these are more standard types of loans. Lien status is also an significant factor that influences the approval of a mortgage. The mortgage secured by a first lien and a subordinate lien has a greater possibility to be approved. Similarly, over 77% of homebuyers opt for a conventional loan, while the rest choose FHA insured (18%), VA-guaranteed (4%), and FSA/RHS-guaranteed (1%).   Conventional loans are attractive to buyers as they do not require a large downpayment and unlike FHA loans can be used in higher loan amounts, which can make certain housing markets more accessible to buyers.  Since conventional loans depend on credit worthiness, their likelihood to be approved may be greater than banks because a better credit score is required to choose a conventional loan compared to FHS loans.
+
+We also looked at the link between applicant and mortgage decision. People in higher income level and white people are more likely to get a loan. It is interesting to find out it is easier for men to get loan originated, comparing to women.
+
+Property type also influence the possibility of getting a loan. We looked at percentage of loans by owner occupancy, showing that most loans (~86%) are for a principal dwelling. Having a secondary dwelling could be a sign of wealth to afford more than one home, therefore it makes sense that most people use loans for a principal dwelling.
 
