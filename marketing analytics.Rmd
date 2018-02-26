@@ -1,16 +1,25 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 url: https://github.com/yaomadrid/marketing-analytics-group-2.git
 title: "Marketing Analytics"
 output: word_document
+
+```{r}
+setwd("~/Desktop/2018 spring/market analytics")
+ny_hmda = read.csv("ny_hmda_2015.csv")
+library(dplyr)
+library(ggplot2)
+
+```
 
 1. What is the data problem? What is the final managerial objective?
 
 Our dataset covers all mortgage information in 2015 for the state of New York, provided by financial institutions. These information were required by Home Mortgage Disclosure Act (HMDA), which unveils all information of mortgage decisions and helps public to make loan decisions. Our final managerial objective is to find out the factors that influence the approval of mortgage and predict mortgage decision based on our model. 
 
-```{r }
-ny_hmda = read.csv("ny_hmda_2015.csv")
-library(dplyr)
-library(ggplot2)
-```
+
 
 2.Describe the measurement types of each variable
 
@@ -100,11 +109,7 @@ Since there are 439654 observations in total, we could directly delete those var
 There is another problem about missing data in this specific dataset. Missing values in some variables are not labeled as "N/A" but as a specific number, such as "3". As for this problem, we could first filter the missing value then mutate it into a mean or mode of the variable.
 
 
-5. Provide histograms/density plots for key variables, such as action taken on loan, gender,
-ethnicity, etc.
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+5. Provide histograms/density plots for key variables, such as action taken on loan, gender, ethnicity, etc.
 
 Action in Loans
 
@@ -116,7 +121,6 @@ summarize(TotalActionTaken = n()) %>%
 mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
 library(ggplot2)
 ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="white")+labs( title = 'Actions in Loans')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
-
 ```
 
 
@@ -140,6 +144,8 @@ plot(density(ny_hm_minority_population$minority_population), main = "Minority_po
 
 ```
 
+
+Actions in Loans by Gender
 ```{r}
 ny_hmdaSex= ny_hmda %>%
   filter(applicant_sex < 3) %>%
@@ -172,7 +178,7 @@ ny_hmda_preapproval= ny_hmda %>%
 group_by(preapproval_name) %>%
 summarize(TotalActionTaken = n()) %>%
 mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
-homeMortgage_preapproval
+
 ggplot(ny_hmda_preapproval, aes(x = preapproval_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs( title = 'Percentage of Loans by Preapproval')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 ```
@@ -184,7 +190,6 @@ ny_hmda_occupancy= ny_hmda %>%
     group_by(owner_occupancy_name) %>%
     summarize(TotalActionTaken = n()) %>%
     mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
-homeMortgage_race
 library(ggplot2)
 ggplot(ny_hmda_occupancy, aes(x = owner_occupancy_name,(angle=30) ,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs( title = 'Percentage of Loans by Owner Occupancy')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
 ```
@@ -195,10 +200,9 @@ ny_hmda_lien = ny_hmda %>%
   group_by(lien_status_name) %>%
   summarise(CountOfLien = n()) %>%
   arrange(desc(CountOfLien))
-
 ggplot(ny_hmda_lien, aes(x = reorder(lien_status_name, CountOfLien), 
-                              y = CountOfLien)) +
-  geom_bar(stat='identity',colour="white", fill =fillColor2) +
+                         y = CountOfLien)) +
+  geom_bar(stat='identity',colour="white") +
   geom_text(aes(x = lien_status_name, y = 1, label = paste0("(",round(CountOfLien),")",sep="")),
             hjust=0, vjust=.5, size = 4, colour = 'black',
             fontface = 'bold') +
@@ -213,7 +217,7 @@ ny_hmda_purpose= ny_hmda %>%
   group_by(loan_purpose_name) %>%
   summarise(CountOfLoanPurpose = n()) %>%
   arrange(desc(CountOfLoanPurpose))
-
+fillColor2 = "#F1C40F"
 ggplot(ny_hmda_purpose, aes(x = reorder(loan_purpose_name, CountOfLoanPurpose), 
                                      y = CountOfLoanPurpose)) +
   geom_bar(stat='identity',colour="white", fill =fillColor2) +
@@ -291,10 +295,8 @@ ny_hmda_income[ny_hmda_income$applicant_income_000s > 90 & ny_hmda_income$applic
 ny_hmda_income[ny_hmda_income$applicant_income_000s > 150,]$Income.Level = "Level4"
 table(ny_hmda_income$action_taken_name,ny_hmda_income$Income.Level)
 ```
-```{r}
-summary(car)
-1111
-```
+
+
 
 
 7. Discuss what the data patterns indicate, and what this could mean for the probability of getting a loan approved.
