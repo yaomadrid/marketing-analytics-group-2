@@ -11,23 +11,28 @@ knitr::opts_chunk$set(echo = TRUE)
 
 2.Describe the measurement types of each variable
 
-```{r cars}
-summary(cars)
-library(ggplot2)
-888
 
 
+
+```{r}
+summary(car)
+1111
 ```
 
 3. Create a table summarizing the range or variation in each variable. Add statistics (mean,
 median, standard deviation, etc.) as you deem necessary.
 
+                                       
+```{r}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+
 ```
 
+
 4. How do you handle missing data in this dataset?
+```{r}
+
+```
 
 
 5. Provide histograms/density plots for key variables, such as action taken on loan, gender,
@@ -36,7 +41,122 @@ ethnicity, etc.
 plot(pressure)
 ```
 
-6. Create bivariate frequency distributions (tables or plots) for key variables.
+Action in Loans
 
+```{r}
+library(dplyr)
+ny_hmda_possessed = ny_hmda %>%
+group_by(action_taken_name) %>%
+summarize(TotalActionTaken = n()) %>%
+mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
+library(ggplot2)
+ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="white")+labs( title = 'Actions in Loans')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+```
+
+
+
+Hustogram of Income
+```{r}
+library(dplyr)
+ny_hmdaIncome <-ny_hmda %>%
+  filter(!is.na(hud_median_family_income)) 
+plot(density(ny_hmdaIncome$hud_median_family_income), main = "Histogram of income", 
+    xlab = "Income", ylab = "Count (#)")
+```
+
+Minority_population distribution
+```{r}
+library(dplyr)
+ny_hm_minority_population <-ny_hmda %>%
+  filter(!is.na(minority_population)) 
+plot(density(ny_hm_minority_population$minority_population), main = "Minority_population", 
+     xlab = "Minority", ylab = "Count (#)")
+
+```
+
+```{r}
+ny_hmdaSex= ny_hmda %>%
+  filter(applicant_sex < 3) %>%
+  group_by(applicant_sex_name) %>%
+  summarize(TotalActionTaken = n()) %>%
+  mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
+library(ggplot2)
+ggplot(ny_hmdaSex, aes(x = applicant_sex_name ,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'Actions in Loans')
+
+
+
+```
+
+Action in Loans by Race
+```{r}
+ny_hmdaRace= ny_hmda %>%
+  filter(applicant_race_1 < 7 )%>%
+  group_by(applicant_race_name_1) %>%
+  summarize(TotalActionTaken = n()) %>%
+  mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
+ny_hmdaRace 
+library(ggplot2)
+ggplot(ny_hmdaRace, aes(x = applicant_race_name_1,(angle=30) ,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'Actions in Loans by race')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+```
+
+6. Create bivariate frequency distributions (tables or plots) for key variables. 
+
+Lean_status distribution by actions
+
+```{r}
+ny_hmdaLean_status=ny_hmda %>%
+group_by(lien_status_name, action_taken_name) %>%
+summarize(TotalActionTaken = n()) 
+ny_hmdaLean_status
+ggplot(ny_hmdaLean_status, aes(x = action_taken_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'lean_status distribution by actions')+facet_wrap(~ lien_status_name, scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+              
+```
+
+Loans Purpose Types Distribution with Race
+
+```{r}
+ny_hmdaRace_status=ny_hmda %>%
+  filter(applicant_race_1 < 7 )%>%
+  group_by(applicant_race_name_1, action_taken_name) %>%
+  summarize(TotalActionTaken = n()) 
+ny_hmdaRace_status
+ggplot(ny_hmdaRace_status, aes(x = action_taken_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = ' race destribution by loan actions')+ facet_wrap(~ applicant_race_name_1 , scales ="free_y")+ theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+
+
+```
+
+Loans Purpose Types Distribution with Action Types
+
+```{r }
+  ny_hmda %>%
+  filter(!is.na(loan_purpose_name)) %>%
+  group_by(loan_purpose_name,action_taken_name) %>%
+  summarise(CountLoanPurpose = n() ) %>%
+  ggplot(aes(x = action_taken_name,y = CountLoanPurpose,fill =(loan_purpose_name))) +
+  geom_bar(stat='identity',colour="white") +
+  labs(x = 'Loan Purpose', y = 'Count', title = 'Loans Purpose Types Distribution with Action Types') +
+  theme_bw()+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+Relationship between Applicant Income level and Action of Loans
+
+```{r }
+ny_hmda_income =  ny_hmda %>%
+filter(!is.na(applicant_income_000s)) 
+ny_hmda_income$Income.Level = "0"
+ny_hmda_income[ny_hmda_income$applicant_income_000s <= 60,]$Income.Level = "Level1"
+ny_hmda_income[ny_hmda_income$applicant_income_000s > 60 & ny_hmda_income$applicant_income_000s <=90,]$Income.Level = "Level2"
+ny_hmda_income[ny_hmda_income$applicant_income_000s > 90 & ny_hmda_income$applicant_income_000s <=150,]$Income.Level = "Level3"
+ny_hmda_income[ny_hmda_income$applicant_income_000s > 150,]$Income.Level = "Level4"
+table(ny_hmda_income$action_taken_name,ny_hmda_income$Income.Level)
+```
+```{r}
+summary(car)
+1111
+```
 7. Discuss what the data patterns indicate, and what this could mean for the probability of
 getting a loan approved.
+
