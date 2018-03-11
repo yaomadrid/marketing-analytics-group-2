@@ -9,8 +9,8 @@ title: "Marketing Analytics"
 output: word_document
 
 ```{r}
-setwd("~/Desktop/2018 spring/market analytics")
-ny_hmda = read.csv("ny_hmda_2015.csv")
+library(readr)
+ny_hmda <- read_csv("Data/ny_hmda_2015.csv")
 library(dplyr)
 library(ggplot2)
 
@@ -25,6 +25,7 @@ Our dataset covers all mortgage information in 2015 for the state of New York, p
 
 There are 78 variables in this original dataset, though there are some redundant variables which deliver the same information. We can classify these variables into applicants, loan, lender, property type, location.
 
+<<<<<<< HEAD
 Variable name 
 Measurement type
 action_taken
@@ -184,6 +185,48 @@ Nominal
 tract_to_msamd_income
 Ratio
 
+=======
+Variable name 	Measurement type	Variable name 	Measurement type
+action_taken	Nominal 	denial_reason_1	Nominal 
+action_taken_name	Nominal 	denial_reason_2	Nominal 
+agency_code	Nominal 	denial_reason_3	Nominal 
+agency_abbr	Nominal 	denial_reason_name_1	Nominal 
+agency_name	Nominal 	denial_reason_name_2	Nominal 
+applicant_ethnicity	Nominal 	denial_reason_name_3	Nominal 
+applicant_ethnicity_name	Nominal 	edit_status	Nominal 
+applicant_income_000s	Ratio	edit_status_name	Nominal 
+applicant_race_1	Nominal 	hoepa_status	Nominal 
+applicant_race_2	Nominal 	hoepa_status_name	Nominal 
+applicant_race_3	Nominal 	lien_status	Nominal 
+applicant_race_4	Nominal 	lien_status_name	Nominal 
+applicant_race_5	Nominal 	loan_purpose	Nominal 
+applicant_race_name_1	Nominal 	loan_purpose_name	Nominal 
+applicant_race_name_2	Nominal 	loan_type	Nominal 
+applicant_race_name_3	Nominal 	loan_type_name	Nominal 
+applicant_race_name_4	Nominal 	msamd	Nominal 
+applicant_race_name_5	Nominal 	msamd_name	Nominal 
+applicant_sex	Nominal 	owner_occupancy	Nominal 
+applicant_sex_name	Nominal 	owner_occupancy_name	Nominal 
+application_date_indicator	Ordinal 	preapproval	Nominal 
+as_of_year	Ordinal	preapproval_name	Nominal 
+census_tract_number	Nominal 	property_type	Nominal 
+co_applicant_ethnicity	Nominal 	property_type_name	Nominal 
+co_applicant_ethnicity_name	Nominal 	purchaser_type	Nominal 
+co_applicant_race_1	Nominal 	purchaser_type_name	Nominal 
+co_applicant_race_2	Nominal 	respondent_id	Nominal 
+co_applicant_race_3	Nominal 	sequence_number	Ordinal
+co_applicant_race_4	Nominal 	state_code	Nominal 
+co_applicant_race_5	Nominal 	state_abbr	Nominal 
+co_applicant_race_name_1	Nominal 	state_name	Nominal 
+co_applicant_race_name_2	Nominal 	hud_median_family_income	Ratio
+co_applicant_race_name_3	Nominal 	loan_amount_000s	Ratio
+co_applicant_race_name_4	Nominal 	number_of_1_to_4_family_units	Ratio
+co_applicant_race_name_5	Nominal 	number_of_owner_occupied_units	Ratio
+co_applicant_sex	Nominal 	minority_population	Ratio
+co_applicant_sex_name	Nominal 	population	Ratio
+county_code	Nominal 	rate_spread	Ratio
+county_name	Nominal 	tract_to_msamd_income	Ratio
+>>>>>>> e5ab69c0ffe7e8f892c740fba111776e797708ed
 
 
 
@@ -228,6 +271,8 @@ There are 78 variables and 439654 observations in this dataset, however, a lot o
 
 Since there are 439654 observations in total, we could directly delete those variables with more than 10 thousand missing values as they are less informative.  For those numeric variables, we could replace the missing value with the mean value of the variable. For those character variable, we could replace the missing value with the mode of the variable.
 
+There is another problem about missing data in this specific dataset. Missing values in some variables are not labeled as "N/A" but as a specific number, such as "3". As for this problem, we could first filter the missing value then mutate it into a mean or mode of the variable.
+
 
 5. Provide histograms/density plots for key variables, such as action taken on loan, gender, ethnicity, etc.
 
@@ -240,7 +285,7 @@ group_by(action_taken_name) %>%
 summarize(TotalActionTaken = n()) %>%
 mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
 library(ggplot2)
-ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="white")+labs( title = 'Actions in Loans')+theme(axis.text.x = element_text(angle = 30, hjust = 1))+geom_text(data=ny_hmda_possessed, aes(label=paste0(round(PercentageActionTaken,1),"%"), y=PercentageActionTaken+3), size=2)
+ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="white")+labs( title = 'Actions in Loans')+theme(axis.text.x = element_text(angle = 30, hjust = 1))+geom_text(data=ny_hmda_possessed, aes(label=paste0(round(PercentageActionTaken,1),"%"), y=PercentageActionTaken+3), size=2) a
 ```
 
 
@@ -356,9 +401,10 @@ ggplot(ny_hmda_type, aes(x = loan_type_name,y = PercentageActionTaken))+ geom_ba
 
 6. Create bivariate frequency distributions (tables or plots) for key variables. 
 
-Lean_status distribution by actions
+Lien_status distribution by actions
 
 ```{r}
+<<<<<<< HEAD
 # lien_status and action taken #
 ny_hmda %>%
   filter(!is.na(lien_status)) %>%
@@ -369,6 +415,13 @@ ny_hmda %>%
   labs(x = 'action_taken', y = 'Count', title = 'Lien_status Distribution with Action Types') +
   theme_bw()+theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
+=======
+ny_hmdaLean_status=ny_hmda %>%
+group_by(lien_status_name, action_taken_name) %>%
+summarize(TotalActionTaken = n()) 
+ny_hmdaLean_status
+ggplot(ny_hmdaLean_status, aes(x = action_taken_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'lien_status distribution by actions')+facet_wrap(~ lien_status_name, scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+>>>>>>> e5ab69c0ffe7e8f892c740fba111776e797708ed
               
 ```
 
