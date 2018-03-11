@@ -62,8 +62,7 @@ county_name	Nominal               	tract_to_msamd_income	Ratio
 
 
 ```{r}
-summary(car)
-1111
+
 ```
 
 3. Create a table summarizing the range or variation in each variable. Add statistics (mean,
@@ -78,6 +77,111 @@ median, standard deviation, etc.) as you deem necessary.
 
 4. How do you handle missing data in this dataset?
 ```{r}
+#Identify the number of missing value
+sum(is.na(ny_hmda$applicant_income_000s))
+sum(is.na(ny_hmda$applicant_race_2))
+sum(is.na(ny_hmda$applicant_race_3))
+sum(is.na(ny_hmda$applicant_race_4))
+sum(is.na(ny_hmda$applicant_race_5))
+sum(is.na(ny_hmda$census_tract_number))
+sum(is.na(ny_hmda$co_applicant_race_2))
+sum(is.na(ny_hmda$co_applicant_race_3))
+sum(is.na(ny_hmda$co_applicant_race_4))
+sum(is.na(ny_hmda$co_applicant_race_5))
+sum(is.na(ny_hmda$county_code))
+sum(is.na(ny_hmda$denial_reason_1))
+sum(is.na(ny_hmda$denial_reason_2))
+sum(is.na(ny_hmda$denial_reason_3))
+sum(is.na(ny_hmda$edit_status))
+sum(is.na(ny_hmda$msamd))
+sum(is.na(ny_hmda$hud_median_family_income))
+sum(is.na(ny_hmda$number_of_1_to_4_family_units))
+sum(is.na(ny_hmda$number_of_owner_occupied_units))
+sum(is.na(ny_hmda$minority_population))
+sum(is.na(ny_hmda$population))
+sum(is.na(ny_hmda$rate_spread))
+sum(is.na(ny_hmda$tract_to_msamd_income))
+
+
+# deal with the missing of income _000$ #
+library("dplyr")
+ny_hmda <- ny_hmda %>%
+filter(!is.na(applicant_income_000s)) 
+ny_hmda$Income.Level = "0"
+ny_hmda[ny_hmda$applicant_income_000s <= 60,]$Income.Level = "Level1"
+ny_hmda[ny_hmda$applicant_income_000s > 60 & ny_hmda$applicant_income_000s <=90,]$Income.Level = "Level2"
+ny_hmda[ny_hmda$applicant_income_000s > 90 & ny_hmda$applicant_income_000s <=150,]$Income.Level = "Level3"
+ny_hmda[ny_hmda$applicant_income_000s > 150,]$Income.Level = "Level4"
+table(ny_hmda$action_taken_name,ny_hmda$Income.Level)
+nyTable<-table(ny_hmda$action_taken_name,ny_hmda$Income.Level)
+chisq.test(nyTable)
+
+
+Mode = function(x){
+  ux = sort(unique(x))
+  tabx = table(x)
+  maxf = ux[which(tabx ==
+                    max(tabx))]
+  return(maxf)
+}
+Mode(ny_hmda$applicant_income_000s)
+ny_hmda$applicant_income_000s[which(is.na(ny_hmda$applicant_income_000s))] <- 60
+summary(ny_hmda$applicant_income_000s)
+
+# deal with the missing of applicant_race_2,3,4,5, deleting the whole column#
+DealMissing<-ny_hmda 
+DealMissing[,c("applicant_race_2","applicant_race_3","applicant_race_4","applicant_race_5")]<-NULL
+DealMissing[,c("applicant_race_name_2","applicant_race_name_3","applicant_race_name_4","applicant_race_name_5")]<-NULL
+
+# deal with the missing of co_applicant_race_2,3,4,5, deleting the whole column#
+DealMissing[,c("co_applicant_race_2","co_applicant_race_3","co_applicant_race_4","co_applicant_race_5")]<-NULL
+DealMissing[,c("co_applicant_race_name_2","co_applicant_race_name_3","co_applicant_race_name_4","co_applicant_race_name_5")]<-NULL
+
+#deal with the missing of county_code
+unique(DealMissing$county_code)
+unique(DealMissing$county_name)
+CountyTable<-table(DealMissing$action_taken_name,DealMissing$county_name)
+chisq.test(CountyTable)
+Mode(DealMissing$county_code)
+DealMissing$county_code[which(is.na(DealMissing$county_code))] <- 103
+DealMissing$county_name[which(is.na(DealMissing$county_name))] <- "Suffolk County"
+#write.csv(DealMissing, "DealMissing.csv")
+
+#deal with the missing of census_tract_number
+chisq.test(table(DealMissing$action_taken_name,ny_hmda$census_tract_number))
+DealMissing$census_tract_number[which(is.na(DealMissing$census_tract_number))]<-Mode(DealMissing$census_tract_number)
+#deal with the missing of edit_status
+chisq.test(table(DealMissing$action_taken_name,ny_hmda$edit_status))
+DealMissing$edit_status[is.na(DealMissing$edit_status)]="0"
+DealMissing$is_missing_editstatus<-"0"
+DealMissing$is_missing_editstatus[DealMissing$edit_status==0]<-1
+
+#deal with the missing of msamd
+chisq.test(table(DealMissing$action_taken_name,ny_hmda$msamd))
+DealMissing$msamd[is.na(DealMissing$msamd)]="0"
+DealMissing$is_missing_msamd<-"0"
+DealMissing$is_missing_msamd[DealMissing$msamd==0]<-1
+#deal with the missing of hud_median_family_income
+chisq.test(table(DealMissing$action_taken_name,ny_hmda$census_tract_number))
+DealMissing$census_tract_number[which(is.na(DealMissing$census_tract_number))]<-Mode(DealMissing$census_tract_number)
+#deal with the missing of number_of_1_to_4_family_units
+chisq.test(table(DealMissing$action_taken_name,ny_hmda$number_of_1_to_4_family_units))
+DealMissing$number_of_1_to_4_family_units[which(is.na(DealMissing$number_of_1_to_4_family_units))]<-Mode(DealMissing$number_of_1_to_4_family_units)
+#deal with the missing of number_of_owner_occupied_units
+chisq.test(table(DealMissing$action_taken_name,ny_hmda$number_of_owner_occupied_units))
+DealMissing$number_of_owner_occupied_units[which(is.na(DealMissing$number_of_owner_occupied_units))]<-Mode(DealMissing$number_of_owner_occupied_units)
+#deal with the missing of minority_population
+chisq.test(table(DealMissing$action_taken_name,ny_hmda$minority_population))
+DealMissing$minority_population[which(is.na(DealMissing$minority_population))]<-Mode(DealMissing$minority_population)
+#deal with the missing of population
+chisq.test(table(DealMissing$action_taken_name,ny_hmda$population))
+DealMissing$population[which(is.na(DealMissing$population))]<-Mode(DealMissing$population)
+#deal with the missing of rate_spread
+DealMissing[,"rate_spread"]<-NULL
+#deal with the missing of tract_to_msamd_income
+chisq.test(table(DealMissing$action_taken_name,ny_hmda$tract_to_msamd_income))
+DealMissing$population[which(is.na(DealMissing$tract_to_msamd_income))]<-Mode(DealMissing$tract_to_msamd_income)
+
 
 ```
 
