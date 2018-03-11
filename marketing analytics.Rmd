@@ -78,6 +78,7 @@ median, standard deviation, etc.) as you deem necessary.
 4. How do you handle missing data in this dataset?
 ```{r}
 #Identify the number of missing value
+summary(ny_hmda)
 sum(is.na(ny_hmda$applicant_income_000s))
 sum(is.na(ny_hmda$applicant_race_2))
 sum(is.na(ny_hmda$applicant_race_3))
