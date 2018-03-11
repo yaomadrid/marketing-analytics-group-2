@@ -511,4 +511,11 @@ t.test(ny_hmApproval[ny_hmApproval$Loan_Approval == 1,]$loan_amount_000s, ny_hmA
 #According to the test result, the p-value is less than 5%#
 #under 5% significant level, we can reject the null hypothesis and think that there is a significant difference between two means#a
 
+# we use Independent-Samples t-test to compare the mean loan amounts #
+t.test(ny_hmApproval[ny_hmApproval$applicant_income_000s<=83,]$Loan_Approval, ny_hmApproval[ny_hmApproval$applicant_income_000s>83,]$Loan_Approval)
+# The median of the income is 83, people whose income is below 83 are regarded as low income, above 83 is regarded as high income #
+# The Loan_Approval only has value 0 or 1, so the mean of Loan_Approval can represent the loan approval rate#
+#According to the ttest, the P-value is less than 5%, so there is significant difference between the approval rate of two group#
+
+
 ```
