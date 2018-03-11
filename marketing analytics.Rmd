@@ -443,7 +443,7 @@ mutate(Loan_Approval = ifelse(action_taken==3, 0, 1))
 ny_hmApproval
 # Loan_Approval is defined as a dummy variable. At first,  we selected obervations whose "action_taken_name" is either "loan originated",
 #"application is approved but not accepted", or "rejected by the institution", because we only care about whether the application is approved or not.
-#Then we assign "Loan_Approval=1" when "loan is originated" or "application is approved but not accepted" and assign "Loan_Approval= 0" when "application is denied” 。。
+#Then we assign "Loan_Approval=1" when "loan is originated" or "application is approved but not accepted" and assign "Loan_Approval= 0" when "application is denied” 。。.
 
   
 ```
