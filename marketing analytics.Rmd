@@ -444,7 +444,7 @@ ny_hmApproval
 # Loan_Approval is defined as a dummy variable. At first,  we selected obervations whose "action_taken_name" is either "loan originated",
 #"application is approved but not accepted", or "rejected by the institution", because we only care about whether the application is approved or not.
 #Then we assign "Loan_Approval=1" when "loan is originated" or "application is approved but not accepted" and assign "Loan_Approval= 0" when "application is denied” 。。.
-
+.
   
 ```
 
@@ -456,6 +456,6 @@ ny_hmApproval
 #Alternate Hypothesis:Loan amounts Mean that were approved ! = Loan amounts Mean that were not approved#
 t.test(ny_hmApproval[ny_hmApproval$Loan_Approval == 1,]$loan_amount_000s, ny_hmApproval[ny_hmApproval$Loan_Approval == 0,]$loan_amount_000)
 #According to the test result, the p-value is less than 5%#
-#under 5% significant level, we can reject the null hypothesis and think that there is a significant difference between two means#
+#under 5% significant level, we can reject the null hypothesis and think that there is a significant difference between two means#a
 
 ```
