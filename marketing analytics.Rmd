@@ -1,76 +1,50 @@
+---
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
 url: https://github.com/yaomadrid/marketing-analytics-group-2.git
 title: "Marketing Analytics"
 output: word_document
-
+```{r}
+library(readr)
+ny_hmda <- read_csv("Data/ny_hmda_2015.csv")
+library(dplyr)
+library(ggplot2)
+```
 1. What is the data problem? What is the final managerial objective?
+
 Our dataset covers all mortgage information in 2015 for the state of New York, provided by financial institutions. These information were required by Home Mortgage Disclosure Act (HMDA), which unveils all information of mortgage decisions and helps public to make loan decisions. Our final managerial objective is to find out the factors that influence the approval of mortgage and predict mortgage decision based on our model. 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 2.Describe the measurement types of each variable
-There are 78 variables in this original dataset, though there are some redundant variables which deliver the same information. We can classify these variables into applicants, loan, lender, property type, location. 
 
-Variable name 	Measurement type     	Variable name 	 Measurement type
-action_taken	Nominal            	    denial_reason_1	 Nominal 
-action_taken_name	Nominal       	    denial_reason_2  Nominal 
-agency_code	Nominal 	                denial_reason_3	  Nominal 
-agency_abbr	Nominal 	                denial_reason_name_1	Nominal 
-agency_name	Nominal 	                denial_reason_name_2	Nominal 
-applicant_ethnicity	Nominal 	        denial_reason_name_3	Nominal 
-applicant_ethnicity_name	Nominal 	  edit_status	          Nominal 
-applicant_income_000s	Ratio	          edit_status_name	Nominal 
-applicant_race_1	Nominal 	          hoepa_status	Nominal 
-applicant_race_2	Nominal 	          hoepa_status_name	Nominal 
-applicant_race_3	Nominal 	          lien_status	Nominal 
-applicant_race_4	Nominal 	          lien_status_name	Nominal 
-applicant_race_5	Nominal 	          loan_purpose	Nominal 
-applicant_race_name_1	Nominal 	      loan_purpose_name	Nominal 
-applicant_race_name_2	Nominal       	loan_type	Nominal 
-applicant_race_name_3	Nominal 	      loan_type_name	Nominal 
-applicant_race_name_4	Nominal 	      msamd	Nominal 
-applicant_race_name_5	Nominal 	      msamd_name	Nominal 
-applicant_sex	Nominal 	              owner_occupancy	Nominal 
-applicant_sex_name	Nominal 	        owner_occupancy_name	Nominal 
-application_date_indicator	Ordinal 	preapproval	Nominal 
-as_of_year	Ordinal	                  preapproval_name	Nominal 
-census_tract_number	Nominal 	        property_type	Nominal 
-co_applicant_ethnicity	Nominal     	property_type_name	Nominal 
-co_applicant_ethnicity_name	Nominal 	purchaser_type	Nominal 
-co_applicant_race_1	Nominal 	        purchaser_type_name	Nominal 
-co_applicant_race_2	Nominal         	respondent_id	Nominal 
-co_applicant_race_3	Nominal 	        sequence_number	Ordinal
-co_applicant_race_4	Nominal 	        state_code	Nominal 
-co_applicant_race_5	Nominal 	        state_abbr	Nominal 
-co_applicant_race_name_1	Nominal 	state_name	Nominal 
-co_applicant_race_name_2	Nominal 	hud_median_family_income	Ratio
-co_applicant_race_name_3	Nominal 	loan_amount_000s	Ratio
-co_applicant_race_name_4	Nominal 	number_of_1_to_4_family_units	Ratio
-co_applicant_race_name_5	Nominal 	number_of_owner_occupied_units	Ratio
-co_applicant_sex	Nominal 	        minority_population	Ratio
-co_applicant_sex_name	Nominal      	population	Ratio
-county_code	Nominal 	             rate_spread	Ratio
-county_name	Nominal               	tract_to_msamd_income	Ratio
+There are 78 variables in this original dataset, though there are some redundant variables which deliver the same information. We can classify these variables into applicants, loan, lender, property type, location.
 
 
+3. Create a table summarizing the range or variation in each variable. Add statistics (mean,median, standard deviation, etc.) as you deem necessary.
 
-
-
-
-
-
-
-```{r}
-
-```
-
-3. Create a table summarizing the range or variation in each variable. Add statistics (mean,
-median, standard deviation, etc.) as you deem necessary.
+We could first inspect the range or variation of each variable, leaving out character variables and we could know more about their features through descriptive statistics.
 
                                        
 ```{r}
-
+summary(ny_hmda$applicant_income_000s)
+summary(ny_hmda$hud_median_family_income)
+summary(ny_hmda$loan_amount_000s)
+summary(ny_hmda$number_of_1_to_4_family_units)
+summary(ny_hmda$number_of_owner_occupied_units)
+summary(ny_hmda$minority_population)
+summary(ny_hmda$population)
+summary(ny_hmda$rate_spread)
+summary(ny_hmda$tract_to_msamd_income)
+sd(ny_hmda$applicant_income_000s, na.rm = TRUE)
+sd(ny_hmda$hud_median_family_income, na.rm = TRUE)
+sd(ny_hmda$number_of_1_to_4_family_units, na.rm = TRUE)
+sd(ny_hmda$number_of_owner_occupied_units, na.rm = TRUE)
+sd(ny_hmda$population, na.rm = TRUE)
+sd(ny_hmda$minority_population, na.rm = TRUE)
+sd(ny_hmda$tract_to_msamd_income, na.rm = TRUE)
 
 ```
 
@@ -130,65 +104,67 @@ ny_hmda$applicant_income_000s[which(is.na(ny_hmda$applicant_income_000s))] <- 60
 summary(ny_hmda$applicant_income_000s)
 
 # deal with the missing of applicant_race_2,3,4,5, deleting the whole column#
-DealMissing<-ny_hmda 
-DealMissing[,c("applicant_race_2","applicant_race_3","applicant_race_4","applicant_race_5")]<-NULL
-DealMissing[,c("applicant_race_name_2","applicant_race_name_3","applicant_race_name_4","applicant_race_name_5")]<-NULL
+ny_hmda[,c("applicant_race_2","applicant_race_3","applicant_race_4","applicant_race_5")]<-NULL
+ny_hmda[,c("applicant_race_name_2","applicant_race_name_3","applicant_race_name_4","applicant_race_name_5")]<-NULL
 
 # deal with the missing of co_applicant_race_2,3,4,5, deleting the whole column#
-DealMissing[,c("co_applicant_race_2","co_applicant_race_3","co_applicant_race_4","co_applicant_race_5")]<-NULL
-DealMissing[,c("co_applicant_race_name_2","co_applicant_race_name_3","co_applicant_race_name_4","co_applicant_race_name_5")]<-NULL
+ny_hmda[,c("co_applicant_race_2","co_applicant_race_3","co_applicant_race_4","co_applicant_race_5")]<-NULL
+ny_hmda[,c("co_applicant_race_name_2","co_applicant_race_name_3","co_applicant_race_name_4","co_applicant_race_name_5")]<-NULL
 
 #deal with the missing of county_code
-unique(DealMissing$county_code)
-unique(DealMissing$county_name)
-CountyTable<-table(DealMissing$action_taken_name,DealMissing$county_name)
+unique(ny_hmda$county_code)
+unique(ny_hmda$county_name)
+CountyTable<-table(ny_hmda$action_taken_name,ny_hmda$county_name)
 chisq.test(CountyTable)
-Mode(DealMissing$county_code)
-DealMissing$county_code[which(is.na(DealMissing$county_code))] <- 103
-DealMissing$county_name[which(is.na(DealMissing$county_name))] <- "Suffolk County"
-#write.csv(DealMissing, "DealMissing.csv")
+Mode(ny_hmda$county_code)
+ny_hmda$county_code[which(is.na(ny_hmda$county_code))] <- 103
+ny_hmda$county_name[which(is.na(ny_hmda$county_name))] <- "Suffolk County"
 
 #deal with the missing of census_tract_number
-chisq.test(table(DealMissing$action_taken_name,ny_hmda$census_tract_number))
-DealMissing$census_tract_number[which(is.na(DealMissing$census_tract_number))]<-Mode(DealMissing$census_tract_number)
+chisq.test(table(ny_hmda$action_taken_name,ny_hmda$census_tract_number))
+ny_hmda$census_tract_number[which(is.na(ny_hmda$census_tract_number))]<-Mode(ny_hmda$census_tract_number)
 #deal with the missing of edit_status
-chisq.test(table(DealMissing$action_taken_name,ny_hmda$edit_status))
-DealMissing$edit_status[is.na(DealMissing$edit_status)]="0"
-DealMissing$is_missing_editstatus<-"0"
-DealMissing$is_missing_editstatus[DealMissing$edit_status==0]<-1
+chisq.test(table(ny_hmda$action_taken_name,ny_hmda$edit_status))
+ny_hmda$edit_status[is.na(ny_hmda$edit_status)]="0"
+ny_hmda$is_missing_editstatus<-"0"
+ny_hmda$is_missing_editstatus[ny_hmda$edit_status==0]<-1
 
 #deal with the missing of msamd
-chisq.test(table(DealMissing$action_taken_name,ny_hmda$msamd))
-DealMissing$msamd[is.na(DealMissing$msamd)]="0"
-DealMissing$is_missing_msamd<-"0"
-DealMissing$is_missing_msamd[DealMissing$msamd==0]<-1
+chisq.test(table(ny_hmda$action_taken_name,ny_hmda$msamd))
+ny_hmda$msamd[is.na(ny_hmda$msamd)]="0"
+ny_hmda$is_missing_msamd<-"0"
+ny_hmda$is_missing_msamd[ny_hmda$msamd==0]<-1
 #deal with the missing of hud_median_family_income
-chisq.test(table(DealMissing$action_taken_name,ny_hmda$census_tract_number))
-DealMissing$census_tract_number[which(is.na(DealMissing$census_tract_number))]<-Mode(DealMissing$census_tract_number)
+chisq.test(table(ny_hmda$action_taken_name,ny_hmda$census_tract_number))
+ny_hmda$census_tract_number[which(is.na(ny_hmda$census_tract_number))]<-Mode(ny_hmda$census_tract_number)
 #deal with the missing of number_of_1_to_4_family_units
-chisq.test(table(DealMissing$action_taken_name,ny_hmda$number_of_1_to_4_family_units))
-DealMissing$number_of_1_to_4_family_units[which(is.na(DealMissing$number_of_1_to_4_family_units))]<-Mode(DealMissing$number_of_1_to_4_family_units)
+chisq.test(table(ny_hmda$action_taken_name,ny_hmda$number_of_1_to_4_family_units))
+ny_hmda$number_of_1_to_4_family_units[which(is.na(ny_hmda$number_of_1_to_4_family_units))]<-Mode(ny_hmda$number_of_1_to_4_family_units)
 #deal with the missing of number_of_owner_occupied_units
-chisq.test(table(DealMissing$action_taken_name,ny_hmda$number_of_owner_occupied_units))
-DealMissing$number_of_owner_occupied_units[which(is.na(DealMissing$number_of_owner_occupied_units))]<-Mode(DealMissing$number_of_owner_occupied_units)
+chisq.test(table(ny_hmda$action_taken_name,ny_hmda$number_of_owner_occupied_units))
+ny_hmda$number_of_owner_occupied_units[which(is.na(ny_hmda$number_of_owner_occupied_units))]<-Mode(ny_hmda$number_of_owner_occupied_units)
 #deal with the missing of minority_population
-chisq.test(table(DealMissing$action_taken_name,ny_hmda$minority_population))
-DealMissing$minority_population[which(is.na(DealMissing$minority_population))]<-Mode(DealMissing$minority_population)
+chisq.test(table(ny_hmda$action_taken_name,ny_hmda$minority_population))
+ny_hmda$minority_population[which(is.na(ny_hmda$minority_population))]<-Mode(ny_hmda$minority_population)
 #deal with the missing of population
-chisq.test(table(DealMissing$action_taken_name,ny_hmda$population))
-DealMissing$population[which(is.na(DealMissing$population))]<-Mode(DealMissing$population)
+chisq.test(table(ny_hmda$action_taken_name,ny_hmda$population))
+ny_hmda$population[which(is.na(ny_hmda$population))]<-Mode(ny_hmda$population)
 #deal with the missing of rate_spread
-DealMissing[,"rate_spread"]<-NULL
+ny_hmda[,"rate_spread"]<-NULL
 #deal with the missing of tract_to_msamd_income
-chisq.test(table(DealMissing$action_taken_name,ny_hmda$tract_to_msamd_income))
-DealMissing$population[which(is.na(DealMissing$tract_to_msamd_income))]<-Mode(DealMissing$tract_to_msamd_income)
-
-
+chisq.test(table(ny_hmda$action_taken_name,ny_hmda$tract_to_msamd_income))
+ny_hmda$population[which(is.na(ny_hmda$tract_to_msamd_income))]<-Mode(ny_hmda$tract_to_msamd_income)
 ```
 
 
-5. Provide histograms/density plots for key variables, such as action taken on loan, gender,
-ethnicity, etc.
+There are 78 variables and 439654 observations in this dataset, however, a lot of variables contains a large number of missing data. There are basically two way to solve the missing data problem: delete the variables with missing data or mutate missing data into specific value. 
+
+Since there are 439654 observations in total, we could directly delete those variables with more than 10 thousand missing values as they are less informative.  For those numeric variables, we could replace the missing value with the mean value of the variable. For those character variable, we could replace the missing value with the mode of the variable.
+
+There is another problem about missing data in this specific dataset. Missing values in some variables are not labeled as "N/A" but as a specific number, such as "3". As for this problem, we could first filter the missing value then mutate it into a mean or mode of the variable.
+
+
+5. Provide histograms/density plots for key variables, such as action taken on loan, gender, ethnicity, etc.
 
 Action in Loans
 
@@ -199,19 +175,16 @@ group_by(action_taken_name) %>%
 summarize(TotalActionTaken = n()) %>%
 mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
 library(ggplot2)
-ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="white")+labs( title = 'Actions in Loans')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
-
+ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="white")+labs( title = 'Actions in Loans')+theme(axis.text.x = element_text(angle = 30, hjust = 1))+geom_text(data=ny_hmda_possessed, aes(label=paste0(round(PercentageActionTaken,1),"%"), y=PercentageActionTaken+3), size=2) 
 ```
 
-
-
-Hustogram of Income
+Histogram of Income
 ```{r}
 library(dplyr)
 ny_hmdaIncome <-ny_hmda %>%
   filter(!is.na(hud_median_family_income)) 
 plot(density(ny_hmdaIncome$hud_median_family_income), main = "Histogram of income", 
-    xlab = "Income", ylab = "Count (#)")
+    xlab = "Income", ylab = "density (#)")
 ```
 
 Minority_population distribution
@@ -224,6 +197,8 @@ plot(density(ny_hm_minority_population$minority_population), main = "Minority_po
 
 ```
 
+
+Actions in Loans by Gender
 ```{r}
 ny_hmdaSex= ny_hmda %>%
   filter(applicant_sex < 3) %>%
@@ -250,16 +225,84 @@ ggplot(ny_hmdaRace, aes(x = applicant_race_name_1,(angle=30) ,y = PercentageActi
 
 ```
 
+Preapproval
+```{r}
+ny_hmda_preapproval= ny_hmda %>%
+group_by(preapproval_name) %>%
+summarize(TotalActionTaken = n()) %>%
+mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
+
+ggplot(ny_hmda_preapproval, aes(x = preapproval_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs(title = 'Percentage of Loans by Preapproval')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+  
+
+```
+
+
+Owner Occupancy Graph
+```{r}
+ny_hmda_occupancy= ny_hmda %>%
+    group_by(owner_occupancy_name) %>%
+    summarize(TotalActionTaken = n()) %>%
+    mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
+library(ggplot2)
+ggplot(ny_hmda_occupancy, aes(x = owner_occupancy_name,(angle=30) ,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs( title = 'Percentage of Loans by Owner Occupancy')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+Lien Status
+```{r}
+ny_hmda_lien = ny_hmda %>% 
+  group_by(lien_status_name) %>%
+  summarise(CountOfLien = n()) %>%
+  arrange(desc(CountOfLien))
+  ggplot(ny_hmda_lien, aes(x=lien_status_name, y=CountOfLien))+
+    geom_bar(stat='identity',colour="grey")+labs(title = 'Loans by lien status')
+           
+```
+
+loan purpose
+```{r}
+ny_hmda_loanPurpose = ny_hmda %>%
+group_by(loan_purpose_name) %>%
+summarize(TotalActionTaken = n()) %>%
+arrange(desc(TotalActionTaken))
+ggplot(ny_hmda_loanPurpose, aes(x = loan_purpose_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="blue")+labs(title = 'Loans by Purpose')
+```
+
+
+Loan Types
+```{r}
+ny_hmda_type= ny_hmda %>%
+filter(!is.na(loan_type_name)) %>%
+  group_by(loan_type_name) %>%
+  summarize(TotalActionTaken = n()) %>%
+  mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
+ggplot(ny_hmda_type, aes(x = loan_type_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs( title = 'Percentage of Loans by Loan Types')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+```
+
+
 6. Create bivariate frequency distributions (tables or plots) for key variables. 
 
-Lean_status distribution by actions
+Lien_status distribution by actions
 
 ```{r}
+# lien_status and action taken #
+ny_hmda %>%
+  filter(!is.na(lien_status)) %>%
+  group_by(lien_status_name,action_taken_name) %>%
+  summarise(CountActionTaken= n() ) %>%
+  ggplot(aes(x = action_taken_name,y = CountActionTaken,fill =(lien_status_name))) +
+  geom_bar(stat='identity',colour="white") +
+  labs(x = 'action_taken', y = 'Count', title = 'Lien_status Distribution with Action Types') +
+  theme_bw()+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+
 ny_hmdaLean_status=ny_hmda %>%
 group_by(lien_status_name, action_taken_name) %>%
 summarize(TotalActionTaken = n()) 
 ny_hmdaLean_status
-ggplot(ny_hmdaLean_status, aes(x = action_taken_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'lean_status distribution by actions')+facet_wrap(~ lien_status_name, scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+ggplot(ny_hmdaLean_status, aes(x = action_taken_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'lien_status distribution by actions')+facet_wrap(~ lien_status_name, scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
               
 ```
 
@@ -269,30 +312,32 @@ Loans Purpose Types Distribution with Race
 ny_hmdaRace_status=ny_hmda %>%
   filter(applicant_race_1 < 7 )%>%
   group_by(applicant_race_name_1, action_taken_name) %>%
-  summarize(TotalActionTaken = n()) 
+  summarize(TotalActionTaken = n()) %>%
+  mutate(PercentageActionTaken = TotalActionTaken /sum(TotalActionTaken)*100) 
 ny_hmdaRace_status
-ggplot(ny_hmdaRace_status, aes(x = action_taken_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = ' race destribution by loan actions')+ facet_wrap(~ applicant_race_name_1 , scales ="free_y")+ theme(axis.text.x = element_text(angle = 30, hjust = 1))
-
-
-
+ggplot(ny_hmdaRace_status, aes(x = action_taken_name,y = PercentageActionTaken),stat="count")+ geom_bar(stat='identity',colour="red")+labs( title = ' race destribution by loan actions')+ geom_bar(stat='identity',colour="red")+labs( title = ' Race and Loan Status')+facet_wrap(~ applicant_race_name_1 , scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))+geom_text(data=ny_hmdaRace_status, aes(label=paste0(round(PercentageActionTaken,1),"%"),y=PercentageActionTaken+3), size=2)
+                                                                                            
 ```
 
 Loans Purpose Types Distribution with Action Types
-
 ```{r }
-  ny_hmda %>%
-  filter(!is.na(loan_purpose_name)) %>%
-  group_by(loan_purpose_name,action_taken_name) %>%
-  summarise(CountLoanPurpose = n() ) %>%
-  ggplot(aes(x = action_taken_name,y = CountLoanPurpose,fill =(loan_purpose_name))) +
-  geom_bar(stat='identity',colour="white") +
-  labs(x = 'Loan Purpose', y = 'Count', title = 'Loans Purpose Types Distribution with Action Types') +
-  theme_bw()+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+# ny_hmda_purpose and action taken #
+ny_hmda_purpose <- ny_hmda %>%
+group_by(loan_purpose_name,action_taken_name) %>%
+summarize(TotalActionTaken = n()) %>%
+mutate(PercentageActionTaken = TotalActionTaken /sum(TotalActionTaken)*100) 
+ny_hmda_purpose
+ggplot(ny_hmda_purpose,aes( x = action_taken_name,y = PercentageActionTaken),stat="count") +
+geom_bar(stat='identity',colour="red") +
+labs( title = 'Loans Purpose Types Distribution with Action Types') +
+facet_wrap(~ loan_purpose_name , scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))+geom_text(data=ny_hmda_purpose, aes(label=paste0(round(PercentageActionTaken,1),"%"), y=PercentageActionTaken+3), size=2)
+  
 ```
 
 Relationship between Applicant Income level and Action of Loans
 
 ```{r }
+# income level and action taken #
 ny_hmda_income =  ny_hmda %>%
 filter(!is.na(applicant_income_000s)) 
 ny_hmda_income$Income.Level = "0"
@@ -300,11 +345,49 @@ ny_hmda_income[ny_hmda_income$applicant_income_000s <= 60,]$Income.Level = "Leve
 ny_hmda_income[ny_hmda_income$applicant_income_000s > 60 & ny_hmda_income$applicant_income_000s <=90,]$Income.Level = "Level2"
 ny_hmda_income[ny_hmda_income$applicant_income_000s > 90 & ny_hmda_income$applicant_income_000s <=150,]$Income.Level = "Level3"
 ny_hmda_income[ny_hmda_income$applicant_income_000s > 150,]$Income.Level = "Level4"
-table(ny_hmda_income$action_taken_name,ny_hmda_income$Income.Level)
+Table <- table(ny_hmda_income$action_taken_name,ny_hmda_income$Income.Level)
+Prop.Table <- prop.table(Table,2) 
+round(Prop.Table,3)
 ```
-```{r}
-summary(car)
-1111
+
+#第六题#
+```{r }
+
+
+library(dplyr)
+ny_hmApproval<-ny_hmda %>%
+filter(action_taken <=3)  %>%
+mutate(Loan_Approval = ifelse(action_taken==3, 0, 1))
+ny_hmApproval
 ```
-7. Discuss what the data patterns indicate, and what this could mean for the probability of getting a loan approved.
+
+
+Loan_Approval is defined as a dummy variable. At first,  we selected obervations whose "action_taken_name" is either "loan originated","application is approved but not accepted", or "rejected by the institution", because we only care about whether the application is approved or not.
+
+Then we assign "Loan_Approval=1" when "loan is originated" or "application is approved but not accepted" and assign "Loan_Approval= 0" when "application is denied”.
+
+第七题 部分
+we use Independent-Samples (or Unpaired Samples) t-test to compare the mean loan amounts between loans that were and were not approved.
+#Null Hypothesis: Loan amounts Mean that were approved = Loan amounts Mean that were not approved #
+#Alternate Hypothesis:Loan amounts Mean that were approved ! = Loan amounts Mean that were not approved#
+
+```{r }
+
+
+t.test(ny_hmApproval[ny_hmApproval$Loan_Approval == 1,]$loan_amount_000s, ny_hmApproval[ny_hmApproval$Loan_Approval == 0,]$loan_amount_000)
+#According to the test result, the p-value is less than 5%#
+#under 5% significant level, we can reject the null hypothesis and think that there is a significant difference between two means#a
+
+# we use Independent-Samples t-test to compare the mean loan amounts #
+t.test(ny_hmApproval[ny_hmApproval$applicant_income_000s<=83,]$Loan_Approval, ny_hmApproval[ny_hmApproval$applicant_income_000s>83,]$Loan_Approval)
+
+```
+
+The median of the income is 83, people whose income is below 83 are regarded as low income, above 83 is regarded as high income.
+
+The Loan_Approval only has value 0 or 1, so the mean of Loan_Approval can represent the loan approval rate. According to the ttest, the P-value is less than 5%, so there is significant difference between the approval rate of two group.
+
+
+
+
 
