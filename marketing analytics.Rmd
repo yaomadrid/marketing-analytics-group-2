@@ -191,7 +191,10 @@ Ratio
 
 We could first inspect the range or variation of each variable, leaving out character variables. Even Though the value of nominal variable is meaningless, we could take a glance at the distributions of these variables through summarizing them. As for numeric variables, we could know more about their features through descriptive statistics.
 
+```{r}
 
+
+```
                                        
 ```{r}
 ny_hmda$applicant_race_3<-as.numeric(ny_hmda$applicant_race_3)
@@ -237,7 +240,7 @@ group_by(action_taken_name) %>%
 summarize(TotalActionTaken = n()) %>%
 mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
 library(ggplot2)
-ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="white")+labs( title = 'Actions in Loans')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="white")+labs( title = 'Actions in Loans')+theme(axis.text.x = element_text(angle = 30, hjust = 1))+geom_text(data=ny_hmda_possessed, aes(label=paste0(round(PercentageActionTaken,1),"%"), y=PercentageActionTaken+3), size=2)
 ```
 
 
@@ -248,7 +251,7 @@ library(dplyr)
 ny_hmdaIncome <-ny_hmda %>%
   filter(!is.na(hud_median_family_income)) 
 plot(density(ny_hmdaIncome$hud_median_family_income), main = "Histogram of income", 
-    xlab = "Income", ylab = "Count (#)")
+    xlab = "Income", ylab = "density (#)")
 ```
 
 Minority_population distribution
@@ -296,7 +299,8 @@ group_by(preapproval_name) %>%
 summarize(TotalActionTaken = n()) %>%
 mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
 
-ggplot(ny_hmda_preapproval, aes(x = preapproval_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs( title = 'Percentage of Loans by Preapproval')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+ggplot(ny_hmda_preapproval, aes(x = preapproval_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs(title = 'Percentage of Loans by Preapproval')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+  
 
 ```
 
@@ -317,7 +321,7 @@ ny_hmda_lien = ny_hmda %>%
   group_by(lien_status_name) %>%
   summarise(CountOfLien = n()) %>%
   arrange(desc(CountOfLien))
-ggplot(ny_hmda_lien, aes(x = reorder(lien_status_name, CountOfLien), 
+  ggplot(ny_hmda_lien, aes(x = reorder(lien_status_name, CountOfLien), 
                          y = CountOfLien)) +
   geom_bar(stat='identity',colour="white") +
   geom_text(aes(x = lien_status_name, y = 1, label = paste0("(",round(CountOfLien),")",sep="")),
@@ -330,21 +334,11 @@ ggplot(ny_hmda_lien, aes(x = reorder(lien_status_name, CountOfLien),
 
 loan purpose
 ```{r}
-ny_hmda_purpose= ny_hmda %>% 
-  group_by(loan_purpose_name) %>%
-  summarise(CountOfLoanPurpose = n()) %>%
-  arrange(desc(CountOfLoanPurpose))
-fillColor2 = "#F1C40F"
-ggplot(ny_hmda_purpose, aes(x = reorder(loan_purpose_name, CountOfLoanPurpose), 
-                                     y = CountOfLoanPurpose)) +
-  geom_bar(stat='identity',colour="white", fill =fillColor2) +
-  geom_text(aes(x = loan_purpose_name, y = 1, label = paste0("(",round(CountOfLoanPurpose),")",sep="")),
-            hjust=0, vjust=.5, size = 4, colour = 'black',
-            fontface = 'bold') +
-  labs(x = 'loan_purpose_name', y = '%age Count Of Action Taken', title = 'Actions in Loans') +
-  coord_flip() + 
-  theme_bw()
-
+ny_hmda_loanPurpose = ny_hmda %>%
+group_by(loan_purpose_name) %>%
+summarize(TotalActionTaken = n()) %>%
+arrange(desc(TotalActionTaken))
+ggplot(ny_hmda_loanPurpose, aes(x = loan_purpose_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="blue")+labs(title = 'Loans by Purpose')
 ```
 
 
@@ -352,10 +346,10 @@ Loan Types
 ```{r}
 ny_hmda_type= ny_hmda %>%
 filter(!is.na(loan_type_name)) %>%
-  group_by() %>%
+  group_by(loan_type_name) %>%
   summarize(TotalActionTaken = n()) %>%
   mutate(PercentageActionTaken = TotalActionTaken/sum(TotalActionTaken) * 100)
-ggplot(ny_hmda_preapproval, aes(x = preapproval_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs( title = 'Percentage of Loans by Preapproval')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+ggplot(ny_hmda_type, aes(x = loan_type_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs( title = 'Percentage of Loans by Loan Types')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 ```
 
@@ -365,11 +359,16 @@ ggplot(ny_hmda_preapproval, aes(x = preapproval_name,y = PercentageActionTaken))
 Lean_status distribution by actions
 
 ```{r}
-ny_hmdaLean_status=ny_hmda %>%
-group_by(lien_status_name, action_taken_name) %>%
-summarize(TotalActionTaken = n()) 
-ny_hmdaLean_status
-ggplot(ny_hmdaLean_status, aes(x = action_taken_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'lean_status distribution by actions')+facet_wrap(~ lien_status_name, scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+# lien_status and action taken #
+ny_hmda %>%
+  filter(!is.na(lien_status)) %>%
+  group_by(lien_status_name,action_taken_name) %>%
+  summarise(CountActionTaken= n() ) %>%
+  ggplot(aes(x = action_taken_name,y = CountActionTaken,fill =(lien_status_name))) +
+  geom_bar(stat='identity',colour="white") +
+  labs(x = 'action_taken', y = 'Count', title = 'Lien_status Distribution with Action Types') +
+  theme_bw()+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
               
 ```
 
@@ -379,10 +378,14 @@ Loans Purpose Types Distribution with Race
 ny_hmdaRace_status=ny_hmda %>%
   filter(applicant_race_1 < 7 )%>%
   group_by(applicant_race_name_1, action_taken_name) %>%
-  summarize(TotalActionTaken = n()) 
+  summarize(TotalActionTaken = n()) %>%
+  mutate(PercentageActionTaken = TotalActionTaken /sum(TotalActionTaken)*100) 
 ny_hmdaRace_status
-ggplot(ny_hmdaRace_status, aes(x = action_taken_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = ' race destribution by loan actions')+ facet_wrap(~ applicant_race_name_1 , scales ="free_y")+ theme(axis.text.x = element_text(angle = 30, hjust = 1))
+ggplot(ny_hmdaRace_status, aes(x = action_taken_name,y = PercentageActionTaken),stat="count")+ geom_bar(stat='identity',colour="red")+labs( title = ' race destribution by loan actions')+ geom_bar(stat='identity',colour="red")+labs( title = ' Race and Loan Status')+facet_wrap(~ applicant_race_name_1 , scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))+geom_text(data=ny_hmdaRace_status, aes(label=paste0(round(PercentageActionTaken,1),"%"),y=PercentageActionTaken+3), size=2)
+                                                                                                                                                                                                                                                                                                                                            
 
+
+ 
 
 
 ```
@@ -390,19 +393,23 @@ ggplot(ny_hmdaRace_status, aes(x = action_taken_name,y = TotalActionTaken))+ geo
 Loans Purpose Types Distribution with Action Types
 
 ```{r }
-  ny_hmda %>%
-  filter(!is.na(loan_purpose_name)) %>%
-  group_by(loan_purpose_name,action_taken_name) %>%
-  summarise(CountLoanPurpose = n() ) %>%
-  ggplot(aes(x = action_taken_name,y = CountLoanPurpose,fill =(loan_purpose_name))) +
-  geom_bar(stat='identity',colour="white") +
-  labs(x = 'Loan Purpose', y = 'Count', title = 'Loans Purpose Types Distribution with Action Types') +
-  theme_bw()+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+  # ny_hmda_purpose and action taken #
+ny_hmda_purpose <- ny_hmda %>%
+group_by(loan_purpose_name,action_taken_name) %>%
+summarize(TotalActionTaken = n()) %>%
+mutate(PercentageActionTaken = TotalActionTaken /sum(TotalActionTaken)*100) 
+ny_hmda_purpose
+ggplot(ny_hmda_purpose,aes( x = action_taken_name,y = PercentageActionTaken),stat="count") +
+geom_bar(stat='identity',colour="red") +
+labs( title = 'Loans Purpose Types Distribution with Action Types') +
+facet_wrap(~ loan_purpose_name , scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))+geom_text(data=ny_hmda_purpose, aes(label=paste0(round(PercentageActionTaken,1),"%"), y=PercentageActionTaken+3), size=2)
+  
 ```
 
 Relationship between Applicant Income level and Action of Loans
 
 ```{r }
+# income level and action taken #
 ny_hmda_income =  ny_hmda %>%
 filter(!is.na(applicant_income_000s)) 
 ny_hmda_income$Income.Level = "0"
@@ -410,7 +417,9 @@ ny_hmda_income[ny_hmda_income$applicant_income_000s <= 60,]$Income.Level = "Leve
 ny_hmda_income[ny_hmda_income$applicant_income_000s > 60 & ny_hmda_income$applicant_income_000s <=90,]$Income.Level = "Level2"
 ny_hmda_income[ny_hmda_income$applicant_income_000s > 90 & ny_hmda_income$applicant_income_000s <=150,]$Income.Level = "Level3"
 ny_hmda_income[ny_hmda_income$applicant_income_000s > 150,]$Income.Level = "Level4"
-table(ny_hmda_income$action_taken_name,ny_hmda_income$Income.Level)
+Table <- table(ny_hmda_income$action_taken_name,ny_hmda_income$Income.Level)
+Prop.Table <- prop.table(Table,2) 
+round(Prop.Table,3)
 ```
 
 
@@ -424,3 +433,29 @@ We also looked at the link between applicant and mortgage decision. People in hi
 
 Property type also influence the possibility of getting a loan. We looked at percentage of loans by owner occupancy, showing that most loans (~86%) are for a principal dwelling. Having a secondary dwelling could be a sign of wealth to afford more than one home, therefore it makes sense that most people use loans for a principal dwelling.
 
+```{r }
+#第六题#
+
+library(dplyr)
+ny_hmApproval<-ny_hmda %>%
+filter(action_taken <=3)  %>%
+mutate(Loan_Approval = ifelse(action_taken==3, 0, 1))
+ny_hmApproval
+# Loan_Approval is defined as a dummy variable. At first,  we selected obervations whose "action_taken_name" is either "loan originated",
+#"application is approved but not accepted", or "rejected by the institution", because we only care about whether the application is approved or not.
+#Then we assign "Loan_Approval=1" when "loan is originated" or "application is approved but not accepted" and assign "Loan_Approval= 0" when "application is denied”
+
+  
+```
+
+```{r }
+
+#第七题 部分#
+#we use Independent-Samples (or Unpaired Samples) t-test to compare the mean loan amounts between loans that were and were not approved #
+#Null Hypothesis: Loan amounts Mean that were approved = Loan amounts Mean that were not approved #
+#Alternate Hypothesis:Loan amounts Mean that were approved ! = Loan amounts Mean that were not approved#
+t.test(ny_hmApproval[ny_hmApproval$Loan_Approval == 1,]$loan_amount_000s, ny_hmApproval[ny_hmApproval$Loan_Approval == 0,]$loan_amount_000)
+#According to the test result, the p-value is less than 5%#
+#under 5% significant level, we can reject the null hypothesis and think that there is a significant difference between two means#
+
+```
