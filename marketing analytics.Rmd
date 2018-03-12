@@ -125,7 +125,7 @@ ny_hmda$county_name[which(is.na(ny_hmda$county_name))] <- "Suffolk County"
 chisq.test(table(ny_hmda$action_taken_name,ny_hmda$census_tract_number))
 ny_hmda$census_tract_number[which(is.na(ny_hmda$census_tract_number))]<-Mode(ny_hmda$census_tract_number)
 #deal with the missing of edit_status
-ny_hmda[]]<-1
+ny_hmda[,"edit_status"]<-NULL
 
 #deal with the missing of msamd
 chisq.test(table(ny_hmda$action_taken_name,ny_hmda$msamd))
