@@ -20,7 +20,7 @@ Our dataset covers all mortgage information in 2015 for the state of New York, p
 
 2.Describe the measurement types of each variable
 
-There are 78 variables in this original dataset, though there are some redundant variables which deliver the same information. We can classify these variables into applicants, loan, lender, property type, location.
+There are 78 variables in this original dataset, though there are some redundant variables which deliver the same information，such as action_take and action_take_name. We can classify these variables into applicants, loan, lender, property type, location.
 
 
 3. Create a table summarizing the range or variation in each variable. Add statistics (mean,median, standard deviation, etc.) as you deem necessary.
@@ -40,6 +40,7 @@ summary(ny_hmda$rate_spread)
 summary(ny_hmda$tract_to_msamd_income)
 sd(ny_hmda$applicant_income_000s, na.rm = TRUE)
 sd(ny_hmda$hud_median_family_income, na.rm = TRUE)
+sd(ny_hmda$loan_amount_000s, na.rm = TRUE)
 sd(ny_hmda$number_of_1_to_4_family_units, na.rm = TRUE)
 sd(ny_hmda$number_of_owner_occupied_units, na.rm = TRUE)
 sd(ny_hmda$population, na.rm = TRUE)
@@ -124,10 +125,7 @@ ny_hmda$county_name[which(is.na(ny_hmda$county_name))] <- "Suffolk County"
 chisq.test(table(ny_hmda$action_taken_name,ny_hmda$census_tract_number))
 ny_hmda$census_tract_number[which(is.na(ny_hmda$census_tract_number))]<-Mode(ny_hmda$census_tract_number)
 #deal with the missing of edit_status
-chisq.test(table(ny_hmda$action_taken_name,ny_hmda$edit_status))
-ny_hmda$edit_status[is.na(ny_hmda$edit_status)]="0"
-ny_hmda$is_missing_editstatus<-"0"
-ny_hmda$is_missing_editstatus[ny_hmda$edit_status==0]<-1
+ny_hmda[]]<-1
 
 #deal with the missing of msamd
 chisq.test(table(ny_hmda$action_taken_name,ny_hmda$msamd))
@@ -135,31 +133,37 @@ ny_hmda$msamd[is.na(ny_hmda$msamd)]="0"
 ny_hmda$is_missing_msamd<-"0"
 ny_hmda$is_missing_msamd[ny_hmda$msamd==0]<-1
 #deal with the missing of hud_median_family_income
-
+t.test(table(ny_hmda$action_taken_name,ny_hmda$hud_median_family_income))
+ny_hmda$hud_median_family_income[which(is.na(ny_hmda$hud_median_family_income))]<-Mode(ny_hmda$hud_median_family_income)
 #deal with the missing of number_of_1_to_4_family_units
-chisq.test(table(ny_hmda$action_taken_name,ny_hmda$number_of_1_to_4_family_units))
+t.test(table(ny_hmda$action_taken_name,ny_hmda$number_of_1_to_4_family_units))
 ny_hmda$number_of_1_to_4_family_units[which(is.na(ny_hmda$number_of_1_to_4_family_units))]<-Mode(ny_hmda$number_of_1_to_4_family_units)
 #deal with the missing of number_of_owner_occupied_units
-chisq.test(table(ny_hmda$action_taken_name,ny_hmda$number_of_owner_occupied_units))
+t.test(table(ny_hmda$action_taken_name,ny_hmda$number_of_owner_occupied_units))
 ny_hmda$number_of_owner_occupied_units[which(is.na(ny_hmda$number_of_owner_occupied_units))]<-Mode(ny_hmda$number_of_owner_occupied_units)
 #deal with the missing of minority_population
-chisq.test(table(ny_hmda$action_taken_name,ny_hmda$minority_population))
+t.test(table(ny_hmda$action_taken_name,ny_hmda$minority_population))
 ny_hmda$minority_population[which(is.na(ny_hmda$minority_population))]<-Mode(ny_hmda$minority_population)
 #deal with the missing of population
-ttest(table(ny_hmda$action_taken_name,ny_hmda$population))
+t.test(table(ny_hmda$action_taken_name,ny_hmda$population))
 ny_hmda$population[which(is.na(ny_hmda$population))]<-Mode(ny_hmda$population)
 #deal with the missing of rate_spread
 ny_hmda[,"rate_spread"]<-NULL
 #deal with the missing of tract_to_msamd_income
-chisq.test(table(ny_hmda$action_taken_name,ny_hmda$tract_to_msamd_income))
+t.test(table(ny_hmda$action_taken_name,ny_hmda$tract_to_msamd_income))
 ny_hmda$population[which(is.na(ny_hmda$tract_to_msamd_income))]<-Mode(ny_hmda$tract_to_msamd_income)
 ```
 
 
-There are 78 variables and 439654 observations in this dataset, however, a lot of variables contains a large number of missing data. There are basically two way to solve the missing data problem: delete the variables with missing data or mutate missing data into specific value. 
+There are 78 variables and 439654 observations in this dataset, however, a lot of variables contains a large number of missing data. There are basically three ways to solve the missing data problem: delete the variables with missing data, mutate missing data into specific value or imputing missing values as dummy variables. 
 
-Since there are 439654 observations in total, we could directly delete those variables with more than 10 thousand missing values as they are less informative.  For those numeric variables, we could replace the missing value with the mean value of the variable. For those character variable, we could replace the missing value with the mode of the variable.
+Since there are 439654 observations in total, we think variables with more than half of observations missing less informative, such as applicant_race_2, applicant_race_3, applicant_race_4, applicant_race_5,co_applicant_race_2，co_applicant_race_3，co_applicant_race_4, co_applicant_race_5 and rate_spread. These variables are missing at random and imputation of these variable would cause inaccuracy due to a significant number of missing data, thus we could directly delete those variables.
 
+For those variables with less than half of observations missing, we firstly test their independence with our dependent variable action_taken_name. As action_taken_name is a categorical variable, we could test its indepence with categorical variables using chi2 test and use t-test to test its indenpendence with continous variables. We found p-values in all test are less than 0.05, which means those variables are not independent with action_taken_name. 
+
+For applicant_income_000s, census_tract_number, county_code, hud_median_family_income, number_of_1_to_4_family_units, number_of_owner_occupied_units, minority_population, population, tract_to_msamd_income, we replace the missing value with the mode value of the variable, which could represent general distribution of the variables. The reason why we did not fill in the missing value with mean is that the exsistence of outlier would make mean less representitive. 
+
+For msamd and edit_status, as there are  we replaced the missing value with 0 and created a new dummy variable
 There is another problem about missing data in this specific dataset. Missing values in some variables are not labeled as "N/A" but as a specific number, such as "3". As for this problem, we could first filter the missing value then mutate it into a mean or mode of the variable.
 
 
@@ -371,20 +375,40 @@ we use Independent-Samples (or Unpaired Samples) t-test to compare the mean loan
 ##Alternate Hypothesis:Loan amounts Mean that were approved ! = Loan amounts Mean that were not approved
 
 ```{r }
-
-
 t.test(ny_hmApproval[ny_hmApproval$Loan_Approval==1,]$loan_amount_000s,ny_hmApproval[ny_hmApproval$Loan_Approval == 0,]$loan_amount_000)
+#or we could use following code to do the t.test
+t.test(ny_hmApproval$Loan_Approval,ny_hmApproval$loan_amount_000s)
 #According to the test result, the p-value is less than 5%#
 #under 5% significant level, we can reject the null hypothesis and think that there is a significant difference between two means#a
 
 # we use Independent-Samples t-test to compare the mean loan amounts #
 t.test(ny_hmApproval[ny_hmApproval$applicant_income_000s<=83,]$Loan_Approval, ny_hmApproval[ny_hmApproval$applicant_income_000s>83,]$Loan_Approval)
 
+#or we can divide observations in to low-income and high-income
+chisq.test(table(ny_hmApproval$Loan_Approval,ny_hmApproval$applicant_income_000s))
+
 ```
 
 The median of the income is 83, people whose income is below 83 are regarded as low income, above 83 is regarded as high income.
 
 The Loan_Approval only has value 0 or 1, so the mean of Loan_Approval can represent the loan approval rate. According to the ttest, the P-value is less than 5%, so there is significant difference between the approval rate of two group.
+
+8.Discuss the determinants of loan approval with respect to loan amounts, household income, applicant’s gender and race. Clearly state the dependent and independent variables used in your regression analysis. Interpret the findings of this analysis, and note the R-squared.
+
+```{r}
+loan_approval_model1<-glm(Loan_Approval~loan_amount_000s+hud_median_family_income+factor(applicant_sex)+factor(applicant_race_1), family = binomial(link = 'logit'),data=ny_hmApproval)
+summary(loan_approval_model1)
+```
+```{r}
+loan_approval_model1<-glm(Loan_Approval~loan_amount_000s+hud_median_family_income+factor(applicant_sex)+factor(applicant_race_1), family = binomial(link = 'probit'),data=ny_hmApproval)
+summary(loan_approval_model1)
+```
+```{r}
+set.seed(1)  
+train.index <- sample(c(1:dim(ny_hmApproval)[1]), dim(ny_hmApproval)[1]*0.7)  
+train_nyhm <- ny_hmApproval[train.index, ]
+test_nyhm <- ny_hmApproval[-train.index, ]
+```
 
 
 
