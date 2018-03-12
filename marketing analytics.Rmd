@@ -135,8 +135,7 @@ ny_hmda$msamd[is.na(ny_hmda$msamd)]="0"
 ny_hmda$is_missing_msamd<-"0"
 ny_hmda$is_missing_msamd[ny_hmda$msamd==0]<-1
 #deal with the missing of hud_median_family_income
-chisq.test(table(ny_hmda$action_taken_name,ny_hmda$census_tract_number))
-ny_hmda$census_tract_number[which(is.na(ny_hmda$census_tract_number))]<-Mode(ny_hmda$census_tract_number)
+
 #deal with the missing of number_of_1_to_4_family_units
 chisq.test(table(ny_hmda$action_taken_name,ny_hmda$number_of_1_to_4_family_units))
 ny_hmda$number_of_1_to_4_family_units[which(is.na(ny_hmda$number_of_1_to_4_family_units))]<-Mode(ny_hmda$number_of_1_to_4_family_units)
@@ -147,7 +146,7 @@ ny_hmda$number_of_owner_occupied_units[which(is.na(ny_hmda$number_of_owner_occup
 chisq.test(table(ny_hmda$action_taken_name,ny_hmda$minority_population))
 ny_hmda$minority_population[which(is.na(ny_hmda$minority_population))]<-Mode(ny_hmda$minority_population)
 #deal with the missing of population
-chisq.test(table(ny_hmda$action_taken_name,ny_hmda$population))
+ttest(table(ny_hmda$action_taken_name,ny_hmda$population))
 ny_hmda$population[which(is.na(ny_hmda$population))]<-Mode(ny_hmda$population)
 #deal with the missing of rate_spread
 ny_hmda[,"rate_spread"]<-NULL
@@ -368,13 +367,13 @@ Then we assign "Loan_Approval=1" when "loan is originated" or "application is ap
 
 第七题 部分
 we use Independent-Samples (or Unpaired Samples) t-test to compare the mean loan amounts between loans that were and were not approved.
-#Null Hypothesis: Loan amounts Mean that were approved = Loan amounts Mean that were not approved #
-#Alternate Hypothesis:Loan amounts Mean that were approved ! = Loan amounts Mean that were not approved#
+##Null Hypothesis: Loan amounts Mean that were approved = Loan amounts Mean that were not approved 
+##Alternate Hypothesis:Loan amounts Mean that were approved ! = Loan amounts Mean that were not approved
 
 ```{r }
 
 
-t.test(ny_hmApproval[ny_hmApproval$Loan_Approval == 1,]$loan_amount_000s, ny_hmApproval[ny_hmApproval$Loan_Approval == 0,]$loan_amount_000)
+t.test(ny_hmApproval[ny_hmApproval$Loan_Approval==1,]$loan_amount_000s,ny_hmApproval[ny_hmApproval$Loan_Approval == 0,]$loan_amount_000)
 #According to the test result, the p-value is less than 5%#
 #under 5% significant level, we can reject the null hypothesis and think that there is a significant difference between two means#a
 
