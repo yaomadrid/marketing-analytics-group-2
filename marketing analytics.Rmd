@@ -157,13 +157,13 @@ ny_hmda$population[which(is.na(ny_hmda$tract_to_msamd_income))]<-Mode(ny_hmda$tr
 
 There are 78 variables and 439654 observations in this dataset, however, a lot of variables contains a large number of missing data. There are basically three ways to solve the missing data problem: delete the variables with missing data, mutate missing data into specific value or imputing missing values as dummy variables. 
 
-Since there are 439654 observations in total, we think variables with more than half of observations missing less informative, such as applicant_race_2, applicant_race_3, applicant_race_4, applicant_race_5,co_applicant_race_2，co_applicant_race_3，co_applicant_race_4, co_applicant_race_5 and rate_spread. These variables are missing at random and imputation of these variable would cause inaccuracy due to a significant number of missing data, thus we could directly delete those variables.
+Since there are 439654 observations in total, we think variables with more than half of observations missing less informative, such as applicant_race_2, applicant_race_3, applicant_race_4, applicant_race_5,co_applicant_race_2，co_applicant_race_3，co_applicant_race_4, co_applicant_race_5, edit_status and rate_spread. Imputation of these variable would cause inaccuracy due to a significant number of missing data, thus we could directly delete those variables.
 
 For those variables with less than half of observations missing, we firstly test their independence with our dependent variable action_taken_name. As action_taken_name is a categorical variable, we could test its indepence with categorical variables using chi2 test and use t-test to test its indenpendence with continous variables. We found p-values in all test are less than 0.05, which means those variables are not independent with action_taken_name. 
 
 For applicant_income_000s, census_tract_number, county_code, hud_median_family_income, number_of_1_to_4_family_units, number_of_owner_occupied_units, minority_population, population, tract_to_msamd_income, we replace the missing value with the mode value of the variable, which could represent general distribution of the variables. The reason why we did not fill in the missing value with mean is that the exsistence of outlier would make mean less representitive. 
 
-For msamd and edit_status, as there are  we replaced the missing value with 0 and created a new dummy variable
+For msamd, as there are 36375 (about 10% of the total observations) missing value in this variable, imputation might lead to inaccuray, we replaced the missing value with 0 and created a new dummy variable
 There is another problem about missing data in this specific dataset. Missing values in some variables are not labeled as "N/A" but as a specific number, such as "3". As for this problem, we could first filter the missing value then mutate it into a mean or mode of the variable.
 
 
@@ -396,18 +396,28 @@ The Loan_Approval only has value 0 or 1, so the mean of Loan_Approval can repres
 8.Discuss the determinants of loan approval with respect to loan amounts, household income, applicant’s gender and race. Clearly state the dependent and independent variables used in your regression analysis. Interpret the findings of this analysis, and note the R-squared.
 
 ```{r}
-loan_approval_model1<-glm(Loan_Approval~loan_amount_000s+hud_median_family_income+factor(applicant_sex)+factor(applicant_race_1), family = binomial(link = 'logit'),data=ny_hmApproval)
+loan_approval_model1<-lm(Loan_Approval~loan_amount_000s+hud_median_family_income+factor(applicant_sex)+factor(applicant_race_1), data=ny_hmApproval)
 summary(loan_approval_model1)
 ```
+#Q8
 ```{r}
 loan_approval_model1<-glm(Loan_Approval~loan_amount_000s+hud_median_family_income+factor(applicant_sex)+factor(applicant_race_1), family = binomial(link = 'probit'),data=ny_hmApproval)
 summary(loan_approval_model1)
 ```
+#Q9
 ```{r}
+#Setting training set and testing set
 set.seed(1)  
 train.index <- sample(c(1:dim(ny_hmApproval)[1]), dim(ny_hmApproval)[1]*0.7)  
 train_nyhm <- ny_hmApproval[train.index, ]
 test_nyhm <- ny_hmApproval[-train.index, ]
+
+loan_approval_model2<-lm(Loan_Approval~loan_amount_000s+hud_median_family_income+applicant_income_000s+applicant_sex+factor(applicant_race_1)+factor(preapproval)+factor(lien_status)+factor(loan_purpose)+factor(loan_type), data=train_nyhm)
+summary(loan_approval_model2)
+
+loan_approval_model3<-lm(Loan_Approval~loan_amount_000s+hud_median_family_income+applicant_income_000s+applicant_sex+factor(applicant_race_1)+factor(preapproval)+factor(lien_status)+factor(loan_purpose)+factor(loan_type), data=train_nyhm)
+summary(loan_approval_model2)
+
 ```
 
 
