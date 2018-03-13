@@ -8,8 +8,10 @@ url: https://github.com/yaomadrid/marketing-analytics-group-2.git
 title: "Marketing Analytics"
 output: word_document
 ```{r}
+setwd("~/Desktop/2018 spring/market analytics")
+install.packages("reader")
 library(readr)
-ny_hmda <- read_csv("Data/ny_hmda_2015.csv")
+ny_hmda <- read_csv("ny_hmda_2015.csv")
 library(dplyr)
 library(ggplot2)
 ```
@@ -126,7 +128,7 @@ chisq.test(table(ny_hmda$action_taken_name,ny_hmda$census_tract_number))
 ny_hmda$census_tract_number[which(is.na(ny_hmda$census_tract_number))]<-Mode(ny_hmda$census_tract_number)
 #deal with the missing of edit_status
 ny_hmda[,"edit_status"]<-NULL
-
+ny_hmda[,"edit_status_name"]<-NULL
 #deal with the missing of msamd
 chisq.test(table(ny_hmda$action_taken_name,ny_hmda$msamd))
 ny_hmda$msamd[is.na(ny_hmda$msamd)]="0"
@@ -152,12 +154,45 @@ ny_hmda[,"rate_spread"]<-NULL
 #deal with the missing of tract_to_msamd_income
 t.test(table(ny_hmda$action_taken_name,ny_hmda$tract_to_msamd_income))
 ny_hmda$population[which(is.na(ny_hmda$tract_to_msamd_income))]<-Mode(ny_hmda$tract_to_msamd_income)
+View(ny_hmda)
+
+
+#deal with the missing of sex#
+chisq.test(table(ny_hmda$action_taken_name,ny_hmda$applicant_sex_name))
+t.test(ny_hmda[ny_hmda$applicant_sex <=2,]$applicant_income_000s,ny_hmda[ny_hmda$applicant_sex==3,]$applicant_income_000s)
+Mode(ny_hmda$applicant_sex)
+library(dplyr)
+ny_hmda <-ny_hmda %>%
+mutate(isMissingSex = ifelse(applicant_sex==3,1,0))
+ny_hmda[ny_hmda$applicant_sex ==3,]$applicant_sex_name = "Male"
+ny_hmda[ny_hmda$applicant_sex ==3,]$applicant_sex = 1
+
+#deal with the missing of applicant_ethnicity#
+Mode(ny_hmda$applicant_ethnicity)
+chisq.test(table(ny_hmda$action_taken_name,ny_hmda$applicant_ethnicity_name))
+ny_hmda <-ny_hmda %>%
+mutate(isMissingEthnicity = ifelse(applicant_ethnicity==3,1,0))
+ny_hmda[ny_hmda$applicant_ethnicity ==3,]$applicant_ethnicity_name = "Not Hispanic or Latino"
+ny_hmda[ny_hmda$applicant_ethnicity ==3,]$applicant_ethnicity = 2
+
+#deal with the missing of race
+Mode(ny_hmda$applicant_race_1)
+chisq.test(table(ny_hmda$action_taken_name,ny_hmda$applicant_race_name_1))
+ny_hmda <-ny_hmda %>%
+mutate(isMissingRace= ifelse(applicant_race_1==6,1,0))
+ny_hmda[ny_hmda$applicant_race_1 ==6,]$applicant_race_name_1 = "White"
+ny_hmda[ny_hmda$applicant_race_1 ==6,]$applicant_race_1 = 5
+
+#deal with the denial_reason#
+ny_hmda[,c("denial_reason_1","denial_reason_2","denial_reason_3")]<-NULL
+ny_hmda[,c("denial_reason_name_1","denial_reason_name_2","denial_reason_name_3")]<-NULL
+
 ```
 
 
 There are 78 variables and 439654 observations in this dataset, however, a lot of variables contains a large number of missing data. There are basically three ways to solve the missing data problem: delete the variables with missing data, mutate missing data into specific value or imputing missing values as dummy variables. 
 
-Since there are 439654 observations in total, we think variables with more than half of observations missing less informative, such as applicant_race_2, applicant_race_3, applicant_race_4, applicant_race_5,co_applicant_race_2，co_applicant_race_3，co_applicant_race_4, co_applicant_race_5, edit_status and rate_spread. Imputation of these variable would cause inaccuracy due to a significant number of missing data, thus we could directly delete those variables.
+Since there are 439654 observations in total, we think variables with more than half of observations missing less informative, such as applicant_race_2, applicant_race_3, applicant_race_4, applicant_race_5,co_applicant_race_2，co_applicant_race_3，co_applicant_race_4, co_applicant_race_5, edit_status, rate_spread and denial reason. Imputation of these variable would cause inaccuracy due to a significant number of missing data, thus we could directly delete those variables.
 
 For those variables with less than half of observations missing, we firstly test their independence with our dependent variable action_taken_name. As action_taken_name is a categorical variable, we could test its indepence with categorical variables using chi2 test and use t-test to test its indenpendence with continous variables. We found p-values in all test are less than 0.05, which means those variables are not independent with action_taken_name. 
 
@@ -165,6 +200,10 @@ For applicant_income_000s, census_tract_number, county_code, hud_median_family_i
 
 For msamd, as there are 36375 (about 10% of the total observations) missing value in this variable, imputation might lead to inaccuray, we replaced the missing value with 0 and created a new dummy variable
 There is another problem about missing data in this specific dataset. Missing values in some variables are not labeled as "N/A" but as a specific number, such as "3". As for this problem, we could first filter the missing value then mutate it into a mean or mode of the variable.
+
+For demographic characteristics like sex, race and ethinity, the missing data is correlated with action_taken_name. Therefore, we cannot delete the missing obervations directly. Instead, we use mode value to replace the missing value and add one dummy variable indicating the value is missing.
+
+
 
 
 5. Provide histograms/density plots for key variables, such as action taken on loan, gender, ethnicity, etc.
@@ -290,18 +329,9 @@ Lien_status distribution by actions
 
 ```{r}
 # lien_status and action taken #
-ny_hmda %>%
-  filter(!is.na(lien_status)) %>%
-  group_by(lien_status_name,action_taken_name) %>%
-  summarise(CountActionTaken= n() ) %>%
-  ggplot(aes(x = action_taken_name,y = CountActionTaken,fill =(lien_status_name))) +
-  geom_bar(stat='identity',colour="white") +
-  labs(x = 'action_taken', y = 'Count', title = 'Lien_status Distribution with Action Types') +
-  theme_bw()+theme(axis.text.x = element_text(angle = 30, hjust = 1))
-
 
 ny_hmdaLean_status=ny_hmda %>%
-group_by(lien_status_name, action_taken_name) %>%
+group_by(lien_status_name, action_taken_name) %>% .
 summarize(TotalActionTaken = n()) 
 ny_hmdaLean_status
 ggplot(ny_hmdaLean_status, aes(x = action_taken_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="red")+labs( title = 'lien_status distribution by actions')+facet_wrap(~ lien_status_name, scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))
@@ -341,9 +371,7 @@ Relationship between Applicant Income level and Action of Loans
 
 ```{r }
 # income level and action taken #
-ny_hmda_income =  ny_hmda %>%
-filter(!is.na(applicant_income_000s)) 
-ny_hmda_income$Income.Level = "0"
+ny_hmda_income =  ny_hmda 
 ny_hmda_income[ny_hmda_income$applicant_income_000s <= 60,]$Income.Level = "Level1"
 ny_hmda_income[ny_hmda_income$applicant_income_000s > 60 & ny_hmda_income$applicant_income_000s <=90,]$Income.Level = "Level2"
 ny_hmda_income[ny_hmda_income$applicant_income_000s > 90 & ny_hmda_income$applicant_income_000s <=150,]$Income.Level = "Level3"
@@ -355,8 +383,6 @@ round(Prop.Table,3)
 
 #第六题#
 ```{r }
-
-
 library(dplyr)
 ny_hmApproval<-ny_hmda %>%
 filter(action_taken <=3)  %>%
@@ -375,28 +401,29 @@ we use Independent-Samples (or Unpaired Samples) t-test to compare the mean loan
 ##Alternate Hypothesis:Loan amounts Mean that were approved ! = Loan amounts Mean that were not approved
 
 ```{r }
-t.test(ny_hmApproval[ny_hmApproval$Loan_Approval==1,]$loan_amount_000s,ny_hmApproval[ny_hmApproval$Loan_Approval == 0,]$loan_amount_000)
+t.test(ny_hmApproval[ny_hmApproval$Loan_Approval==1,]$loan_amount_000s,ny_hmApproval[ny_hmApproval$Loan_Approval == 0,]$loan_amount_000s)
 #or we could use following code to do the t.test
 t.test(ny_hmApproval$Loan_Approval,ny_hmApproval$loan_amount_000s)
 #According to the test result, the p-value is less than 5%#
 #under 5% significant level, we can reject the null hypothesis and think that there is a significant difference between two means#a
 
 # we use Independent-Samples t-test to compare the mean loan amounts #
-t.test(ny_hmApproval[ny_hmApproval$applicant_income_000s<=83,]$Loan_Approval, ny_hmApproval[ny_hmApproval$applicant_income_000s>83,]$Loan_Approval)
+summary(ny_hmda$applicant_income_000s)
+t.test(ny_hmApproval[ny_hmApproval$applicant_income_000s<=90,]$Loan_Approval, ny_hmApproval[ny_hmApproval$applicant_income_000s>90,]$Loan_Approval)
 
 #or we can divide observations in to low-income and high-income
 chisq.test(table(ny_hmApproval$Loan_Approval,ny_hmApproval$applicant_income_000s))
 
 ```
 
-The median of the income is 83, people whose income is below 83 are regarded as low income, above 83 is regarded as high income.
+The median of the income is 90, people whose income is below 83 are regarded as low income, above 90 is regarded as high income.
 
 The Loan_Approval only has value 0 or 1, so the mean of Loan_Approval can represent the loan approval rate. According to the ttest, the P-value is less than 5%, so there is significant difference between the approval rate of two group.
 
 8.Discuss the determinants of loan approval with respect to loan amounts, household income, applicant’s gender and race. Clearly state the dependent and independent variables used in your regression analysis. Interpret the findings of this analysis, and note the R-squared.
 
 ```{r}
-loan_approval_model1<-lm(Loan_Approval~loan_amount_000s+hud_median_family_income+factor(applicant_sex)+factor(applicant_race_1), data=ny_hmApproval)
+loan_approval_model1<-lm(Loan_Approval~loan_amount_000s+hud_median_family_income+factor(applicant_sex)+factor(applicant_race_1), data=ny_hmApproval, x= TRUE)
 summary(loan_approval_model1)
 ```
 #Q8
