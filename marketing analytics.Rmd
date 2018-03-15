@@ -31,26 +31,17 @@ We could first inspect the range or variation of each variable, leaving out char
 
                                        
 ```{r}
-summary(ny_hmda$applicant_income_000s)
-summary(ny_hmda$hud_median_family_income)
-summary(ny_hmda$loan_amount_000s)
-summary(ny_hmda$number_of_1_to_4_family_units)
-summary(ny_hmda$number_of_owner_occupied_units)
-summary(ny_hmda$minority_population)
-summary(ny_hmda$population)
-summary(ny_hmda$rate_spread)
-summary(ny_hmda$tract_to_msamd_income)
-sd(ny_hmda$applicant_income_000s, na.rm = TRUE)
-sd(ny_hmda$hud_median_family_income, na.rm = TRUE)
-sd(ny_hmda$loan_amount_000s, na.rm = TRUE)
-sd(ny_hmda$number_of_1_to_4_family_units, na.rm = TRUE)
-sd(ny_hmda$number_of_owner_occupied_units, na.rm = TRUE)
-sd(ny_hmda$population, na.rm = TRUE)
-sd(ny_hmda$minority_population, na.rm = TRUE)
-sd(ny_hmda$tract_to_msamd_income, na.rm = TRUE)
+Myvar <- c("hud_median_family_income", "loan_amount_000s", "number_of_1_to_4_family_units","number_of_owner_occupied_units","minority_population","population")
+RatioVariable <- ny_hmda[ Myvar ]
+library(pastecs)
+stat.desc(RatioVariable, desc=TRUE)
+options(scipen=100)
+options(digits=1)
+
+
 
 ```
-
+For nominal variables, we use graphs in section 5 to describe the data pattern. 
 
 4. How do you handle missing data in this dataset?
 ```{r}
@@ -203,6 +194,8 @@ There is another problem about missing data in this specific dataset. Missing va
 
 For demographic characteristics like sex, race and ethinity, the missing data is correlated with action_taken_name. Therefore, we cannot delete the missing obervations directly. Instead, we use mode value to replace the missing value and add one dummy variable indicating the value is missing.
 
+After dealing with the missing data, there are 58 variables and 378651 observations in the new data frame.
+
 
 
 
@@ -211,6 +204,7 @@ For demographic characteristics like sex, race and ethinity, the missing data is
 Action in Loans
 
 ```{r}
+echo=FALSE
 library(dplyr)
 ny_hmda_possessed = ny_hmda %>%
 group_by(action_taken_name) %>%
@@ -220,17 +214,28 @@ library(ggplot2)
 ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="white")+labs( title = 'Actions in Loans')+theme(axis.text.x = element_text(angle = 30, hjust = 1))+geom_text(data=ny_hmda_possessed, aes(label=paste0(round(PercentageActionTaken,1),"%"), y=PercentageActionTaken+3), size=2) 
 ```
 
+-	As we can see from our plot, the majority of loans (55.9%) are originated. This indicates an ease of successfully obtaining a loan and having it originated  The next most common action is the application being denied by the financial institution (19.3%).
+
+```{r}
+
+```
+
 Histogram of Income
 ```{r}
+echo=FALSE
 library(dplyr)
 ny_hmdaIncome <-ny_hmda %>%
   filter(!is.na(hud_median_family_income)) 
 plot(density(ny_hmdaIncome$hud_median_family_income), main = "Histogram of income", 
     xlab = "Income", ylab = "density (#)")
 ```
+-	The majority of incomes are conentrated around 70,000 abd 110,000 per annum, with 70,000 having the highest density.
+
+
 
 Minority_population distribution
 ```{r}
+echo=FALSE
 library(dplyr)
 ny_hm_minority_population <-ny_hmda %>%
   filter(!is.na(minority_population)) 
@@ -239,9 +244,16 @@ plot(density(ny_hm_minority_population$minority_population), main = "Minority_po
 
 ```
 
+-	The density of minority populations is very skewed to the left and concentrated between 0 to 10%.
+
+
+
+
+
 
 Actions in Loans by Gender
 ```{r}
+echo=FALSE
 ny_hmdaSex= ny_hmda %>%
   filter(applicant_sex < 3) %>%
   group_by(applicant_sex_name) %>%
@@ -254,8 +266,14 @@ ggplot(ny_hmdaSex, aes(x = applicant_sex_name ,y = PercentageActionTaken))+ geom
 
 ```
 
+-	The majority of actions taken on loan are mostly for Males, with 70% compared to female where only 30% of actions are taken on loans.
+
+
+
+
 Action in Loans by Race
 ```{r}
+echo=FALSE
 ny_hmdaRace= ny_hmda %>%
   filter(applicant_race_1 < 7 )%>%
   group_by(applicant_race_name_1) %>%
@@ -267,8 +285,15 @@ ggplot(ny_hmdaRace, aes(x = applicant_race_name_1,(angle=30) ,y = PercentageActi
 
 ```
 
+-	The vast majority of loan actions are for White applicants (approximately 85%).  All other races, all have a percentage of action taken which is much lower all under 10%.
+
+
+
+
+
 Preapproval
 ```{r}
+echo=FALSE
 ny_hmda_preapproval= ny_hmda %>%
 group_by(preapproval_name) %>%
 summarize(TotalActionTaken = n()) %>%
@@ -278,10 +303,17 @@ ggplot(ny_hmda_preapproval, aes(x = preapproval_name,y = PercentageActionTaken))
   
 
 ```
+-	Around 80% of all loans are not applicable for preapproval.  Preapproval is a way for the lender to determine credit worhtiness, however it is not necessarily required for obtaining a loan. Less than 5% of loans had preapproval requested.
+
+
+
+
+
 
 
 Owner Occupancy Graph
 ```{r}
+echo=FALSE
 ny_hmda_occupancy= ny_hmda %>%
     group_by(owner_occupancy_name) %>%
     summarize(TotalActionTaken = n()) %>%
@@ -289,9 +321,17 @@ ny_hmda_occupancy= ny_hmda %>%
 library(ggplot2)
 ggplot(ny_hmda_occupancy, aes(x = owner_occupancy_name,(angle=30) ,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs( title = 'Percentage of Loans by Owner Occupancy')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
 ```
+-	Most loans, over 85%, have the owner occupying it as a principal dwelling.  This makes sense as most people can only afford to own one residence entirely.
+
+
+
+
+
+
 
 Lien Status
 ```{r}
+echo=FALSE
 ny_hmda_lien = ny_hmda %>% 
   group_by(lien_status_name) %>%
   summarise(CountOfLien = n()) %>%
@@ -300,9 +340,16 @@ ny_hmda_lien = ny_hmda %>%
     geom_bar(stat='identity',colour="grey")+labs(title = 'Loans by lien status')
            
 ```
+The majority of loans are secured by a first lien.  First lien securitization means that if the loan is not paid off, this means that there is one principal lender who will have to be repaid the entire amount.  The high amount of loans secured by a first lien is representative that people take lower risk loans (i.e. more affordable) as multiple liens are required when the loan amount is deeemed to be riskier for the applicant
+
+
+
+
+
 
 loan purpose
 ```{r}
+echo=FALSE
 ny_hmda_loanPurpose = ny_hmda %>%
 group_by(loan_purpose_name) %>%
 summarize(TotalActionTaken = n()) %>%
@@ -310,9 +357,18 @@ arrange(desc(TotalActionTaken))
 ggplot(ny_hmda_loanPurpose, aes(x = loan_purpose_name,y = TotalActionTaken))+ geom_bar(stat='identity',colour="blue")+labs(title = 'Loans by Purpose')
 ```
 
+-	The most popular loans are for Home purchases at around 190,000 actions taken.  This represents the high amount of home ownership that people have as well as the value that people place in owning a home in NY.
+
+
+
+
+
+
+
 
 Loan Types
 ```{r}
+echo=FALSE
 ny_hmda_type= ny_hmda %>%
 filter(!is.na(loan_type_name)) %>%
   group_by(loan_type_name) %>%
@@ -321,6 +377,15 @@ filter(!is.na(loan_type_name)) %>%
 ggplot(ny_hmda_type, aes(x = loan_type_name,y = PercentageActionTaken))+ geom_bar(stat='identity',colour="blue")+labs( title = 'Percentage of Loans by Loan Types')+theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 ```
+-	The most popular types of loans are Convential loans (~80%).  These loans are easier to get than insured/guaranteed loans as they would require less collateral in order to be obtained
+
+
+
+
+
+
+
+
 
 
 6. Create bivariate frequency distributions (tables or plots) for key variables. 
@@ -328,6 +393,7 @@ ggplot(ny_hmda_type, aes(x = loan_type_name,y = PercentageActionTaken))+ geom_ba
 Lien_status distribution by actions
 
 ```{r}
+echo=FALSE
 # lien_status and action taken #
 
 ny_hmdaLean_status=ny_hmda %>%
@@ -339,9 +405,17 @@ ggplot(ny_hmdaLean_status, aes(x = action_taken_name,y = TotalActionTaken))+ geo
               
 ```
 
+
+
+
+
+
+
+
 Loans Purpose Types Distribution with Race
 
 ```{r}
+echo=FALSE
 ny_hmdaRace_status=ny_hmda %>%
   filter(applicant_race_1 < 7 )%>%
   group_by(applicant_race_name_1, action_taken_name) %>%
@@ -354,6 +428,7 @@ ggplot(ny_hmdaRace_status, aes(x = action_taken_name,y = PercentageActionTaken),
 
 Loans Purpose Types Distribution with Action Types
 ```{r }
+echo=FALSE
 # ny_hmda_purpose and action taken #
 ny_hmda_purpose <- ny_hmda %>%
 group_by(loan_purpose_name,action_taken_name) %>%
@@ -370,6 +445,7 @@ facet_wrap(~ loan_purpose_name , scales ="free_y")+theme(axis.text.x = element_t
 Relationship between Applicant Income level and Action of Loans
 
 ```{r }
+echo=FALSE
 # income level and action taken #
 ny_hmda_income =  ny_hmda 
 ny_hmda_income[ny_hmda_income$applicant_income_000s <= 60,]$Income.Level = "Level1"
@@ -381,7 +457,7 @@ Prop.Table <- prop.table(Table,2)
 round(Prop.Table,3)
 ```
 
-#第六题#
+7. Define a variable Loan_Approval
 ```{r }
 library(dplyr)
 ny_hmApproval<-ny_hmda %>%
@@ -395,7 +471,7 @@ Loan_Approval is defined as a dummy variable. At first,  we selected obervations
 
 Then we assign "Loan_Approval=1" when "loan is originated" or "application is approved but not accepted" and assign "Loan_Approval= 0" when "application is denied”.
 
-第七题 部分
+7. T-test
 we use Independent-Samples (or Unpaired Samples) t-test to compare the mean loan amounts between loans that were and were not approved.
 ##Null Hypothesis: Loan amounts Mean that were approved = Loan amounts Mean that were not approved 
 ##Alternate Hypothesis:Loan amounts Mean that were approved ! = Loan amounts Mean that were not approved
@@ -423,9 +499,13 @@ The Loan_Approval only has value 0 or 1, so the mean of Loan_Approval can repres
 8.Discuss the determinants of loan approval with respect to loan amounts, household income, applicant’s gender and race. Clearly state the dependent and independent variables used in your regression analysis. Interpret the findings of this analysis, and note the R-squared.
 
 ```{r}
-loan_approval_model1<-lm(Loan_Approval~loan_amount_000s+hud_median_family_income+factor(applicant_sex)+factor(applicant_race_1), data=ny_hmApproval, x= TRUE)
+loan_approval_model1<-lm(Loan_Approval~loan_amount_000s+hud_median_family_income+factor(applicant_sex)+factor(applicant_race_1)+isMissingSex+isMissingRace, data=ny_hmApproval, x= TRUE)
 summary(loan_approval_model1)
 ```
+In our model, "Loan_Approval"" is a dependent variabl. It is a dummy variable and shows whether the application is approved or not. "loan_amount_000s", "hud_median_family_income","applicant_sex", "applicant_race_1", "IsMissingSex","IsMissingRace" are included in the model as dependent variables. 
+According to the regression result, loan_amount, sex and race are statistically significant under 5% significant level. However, hud_median_family_income is not statisticallt significant. The coefficient of loan amount represents the incresing possibility of getting approved if loan amount increases one unit. The base of group in the model is white male, therefore all coefficients of dummy variables represent the difference of the possibility of approval from the base group.
+Noticeably, the R-squared is only 0.0198, showing that our model can not explain the data variation very well. Therefore, the next step is to control omitted variables to make a better model.  
+
 #Q8
 ```{r}
 loan_approval_model1<-glm(Loan_Approval~loan_amount_000s+hud_median_family_income+factor(applicant_sex)+factor(applicant_race_1), family = binomial(link = 'probit'),data=ny_hmApproval)
@@ -436,18 +516,28 @@ summary(loan_approval_model1)
 #Setting training set and testing set
 set.seed(1)  
 train.index <- sample(c(1:dim(ny_hmApproval)[1]), dim(ny_hmApproval)[1]*0.7)  
-train_nyhm <- ny_hmApproval[train.index, ]
-test_nyhm <- ny_hmApproval[-train.index, ]
+train.index
+train_data <- ny_hmApproval[train.index, ]
+test_data <- ny_hmApproval[-train.index, ]
 
-loan_approval_model2<-lm(Loan_Approval~loan_amount_000s+hud_median_family_income+applicant_income_000s+applicant_sex+factor(applicant_race_1)+factor(preapproval)+factor(lien_status)+factor(loan_purpose)+factor(loan_type), data=train_nyhm)
-summary(loan_approval_model2)
+loan_approval_model2<-lm(Loan_Approval~loan_amount_000s+applicant_income_000s+factor(applicant_sex)+factor(applicant_race_1)+factor(preapproval)+factor(lien_status)+factor(loan_purpose)+factor(loan_type)+factor(purchaser_type)+isMissingSex+isMissingRace, data=train_data)
+print(summary(loan_approval_model3),digits=2)
+Loan_Approval_Output <- predict(loan_approval_model2,newdata = test_data)
 
-loan_approval_model3<-lm(Loan_Approval~loan_amount_000s+hud_median_family_income+applicant_income_000s+applicant_sex+factor(applicant_race_1)+factor(preapproval)+factor(lien_status)+factor(loan_purpose)+factor(loan_type), data=train_nyhm)
-summary(loan_approval_model2)
+Comparing <- data.frame(actual=test_data$action_taken_name,Loan_Approval_Output)
+head(Comparing)
+
+# we regard the action_taken is a continuous variable. Therefore we can calculate the prediction error for this model#
+mean((test_data$action_taken-Loan_Approval_Output)^2, na.rm = TRUE)
+
 
 ```
+Compared to previous model, the R-square of this model is higher. 0.31 R-square means that 31% data variation can be represented by the model. All variables are statistically significant under this model except for factor(applicant_sex)4,factor(applicant_race_1)3,factor(applicant_race_1)4  and factor(lien_status)3. 
 
 
+
+#10#
+In our model, there are significant customer segments based on demographics.
 
 
 
