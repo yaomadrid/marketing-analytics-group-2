@@ -33,8 +33,10 @@ We could first inspect the range or variation of each variable, leaving out char
 ```{r}
 Myvar <- c("hud_median_family_income", "loan_amount_000s", "number_of_1_to_4_family_units","number_of_owner_occupied_units","minority_population","population")
 RatioVariable <- ny_hmda[ Myvar ]
+summary(RatioVariable)
+
 library(pastecs)
-stat.desc(RatioVariable, desc=TRUE)
+stat.desc(RatioVariable, basic=FALSE,desc=TRUE)
 options(scipen=100)
 options(digits=1)
 
@@ -508,8 +510,7 @@ Noticeably, the R-squared is only 0.0198, showing that our model can not explain
 
 #Q8
 ```{r}
-loan_approval_model1<-glm(Loan_Approval~loan_amount_000s+hud_median_family_income+factor(applicant_sex)+factor(applicant_race_1), family = binomial(link = 'probit'),data=ny_hmApproval)
-summary(loan_approval_model1)
+
 ```
 #Q9
 ```{r}
@@ -521,7 +522,8 @@ train_data <- ny_hmApproval[train.index, ]
 test_data <- ny_hmApproval[-train.index, ]
 
 loan_approval_model2<-lm(Loan_Approval~loan_amount_000s+applicant_income_000s+factor(applicant_sex)+factor(applicant_race_1)+factor(preapproval)+factor(lien_status)+factor(loan_purpose)+factor(loan_type)+factor(purchaser_type)+isMissingSex+isMissingRace, data=train_data)
-print(summary(loan_approval_model3),digits=2)
+options("scipen"=100, "digits"= 2)
+
 Loan_Approval_Output <- predict(loan_approval_model2,newdata = test_data)
 
 Comparing <- data.frame(actual=test_data$action_taken_name,Loan_Approval_Output)
@@ -537,7 +539,7 @@ Compared to previous model, the R-square of this model is higher. 0.31 R-square 
 
 
 #10#
-In our model, there are significant customer segments based on demographics.
+In our model, there are significant customer segments based on demographics. The first segment is based on gender. On average, the probability for female of getting loan approved is 0.3% less than male, if all else situations are the same. The number is so small that we can makde a conclution that the gender bias is not available. 
 
 
 
