@@ -1,24 +1,19 @@
 ---
-output:
-  word_document: default
-  pdf_document: default
-  html_document: default
+title: "Interim Deliverable – II"
+author: "Albert Reiss, Xuan Liu, Yao Zhou"
+output: word_document
 ---
-url: https://github.com/yaomadrid/marketing-analytics-group-2.git
+URL: https://github.com/yaomadrid/marketing-analytics-group-2.git
 title: "Marketing Analytics"
 output: word_document
-```{r}
-echo=FALSE
-warning=FALSE
-message=FALSE
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
 library(readr)
 library(dplyr)
 library(ggplot2)
 library(pastecs)
 ny_hmda <- read_csv("~/R/BUS256/Data/ny_hmda_2015.csv")
-echo=FALSE
-warning=FALSE
-message=FALSE
 ```
 ## Data problem and managerial objectives
 
@@ -36,9 +31,6 @@ We could first inspect the range or variation of each variable, leaving out char
 
                                        
 ```{r}
-echo=FALSE
-warning=FALSE
-message=FALSE
 Myvar <- c("hud_median_family_income", "loan_amount_000s", "number_of_1_to_4_family_units","number_of_owner_occupied_units","minority_population","population")
 RatioVariable <- ny_hmda[ Myvar ]
 summary(RatioVariable)
@@ -50,11 +42,8 @@ options(digits=1)
 For nominal variables, we use graphs in section 5 to describe the data pattern. 
  
 ##4. Handling missing data
-```{r}
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 #Identify the number of missing value
-echo=FALSE
-warning=FALSE
-message=FALSE
 sum(is.na(ny_hmda$applicant_income_000s))
 sum(is.na(ny_hmda$applicant_race_2))
 sum(is.na(ny_hmda$applicant_race_3))
@@ -206,10 +195,7 @@ After dealing with the missing data, there are 58 variables and 378651 observati
 
 Action in Loans
 
-```{r}
-echo=FALSE
-warning=FALSE
-message=FALSE
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 library(dplyr)
 ny_hmda_possessed = ny_hmda %>%
 group_by(action_taken_name) %>%
@@ -222,8 +208,7 @@ ggplot(ny_hmda_possessed, aes(x = action_taken_name,y = PercentageActionTaken))+
 -	As we can see from our plot, the majority of loans (55.9%) are originated. This indicates an ease of successfully obtaining a loan and having it originated  The next most common action is the application being denied by the financial institution (19.3%).
 
 Histogram of Income
-```{r}
-echo=FALSE
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 library(dplyr)
 ny_hmdaIncome <-ny_hmda %>%
   filter(!is.na(hud_median_family_income)) 
@@ -233,8 +218,7 @@ plot(density(ny_hmdaIncome$hud_median_family_income), main = "Histogram of incom
 -	The majority of incomes are conentrated around 70,000 abd 110,000 per annum, with 70,000 having the highest density.
 
 Minority_population distribution
-```{r}
-echo=FALSE
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 library(dplyr)
 ny_hm_minority_population <-ny_hmda %>%
   filter(!is.na(minority_population)) 
@@ -247,8 +231,7 @@ plot(density(ny_hm_minority_population$minority_population), main = "Minority_po
 
 
 Actions in Loans by Gender
-```{r}
-echo=FALSE
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 ny_hmdaSex= ny_hmda %>%
   filter(applicant_sex < 3) %>%
   group_by(applicant_sex_name) %>%
@@ -262,8 +245,7 @@ ggplot(ny_hmdaSex, aes(x = applicant_sex_name ,y = PercentageActionTaken))+ geom
 -	The majority of actions taken on loan are mostly for Males, with 70% compared to female where only 30% of actions are taken on loans.
 
 Action in Loans by Race
-```{r}
-echo=FALSE
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 ny_hmdaRace= ny_hmda %>%
   filter(applicant_race_1 < 7 )%>%
   group_by(applicant_race_name_1) %>%
@@ -278,8 +260,7 @@ ggplot(ny_hmdaRace, aes(x = applicant_race_name_1,(angle=30) ,y = PercentageActi
 -	The vast majority of loan actions are for White applicants (approximately 85%).  All other races, all have a percentage of action taken which is much lower all under 10%.
 
 Preapproval
-```{r}
-echo=FALSE
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 ny_hmda_preapproval= ny_hmda %>%
 group_by(preapproval_name) %>%
 summarize(TotalActionTaken = n()) %>%
@@ -292,8 +273,7 @@ ggplot(ny_hmda_preapproval, aes(x = preapproval_name,y = PercentageActionTaken))
 -	Around 80% of all loans are not applicable for preapproval.  Preapproval is a way for the lender to determine credit worhtiness, however it is not necessarily required for obtaining a loan. Less than 5% of loans had preapproval requested.
 
 Owner Occupancy Graph
-```{r}
-echo=FALSE
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 ny_hmda_occupancy= ny_hmda %>%
     group_by(owner_occupancy_name) %>%
     summarize(TotalActionTaken = n()) %>%
@@ -304,8 +284,7 @@ ggplot(ny_hmda_occupancy, aes(x = owner_occupancy_name,(angle=30) ,y = Percentag
 -	Most loans, over 85%, have the owner occupying it as a principal dwelling.  This makes sense as most people can only afford to own one residence entirely.
 
 Lien Status
-```{r}
-echo=FALSE
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 ny_hmda_lien = ny_hmda %>% 
   group_by(lien_status_name) %>%
   summarise(CountOfLien = n()) %>%
@@ -317,8 +296,7 @@ ny_hmda_lien = ny_hmda %>%
 The majority of loans are secured by a first lien.  First lien securitization means that if the loan is not paid off, this means that there is one principal lender who will have to be repaid the entire amount.  The high amount of loans secured by a first lien is representative that people take lower risk loans (i.e. more affordable) as multiple liens are required when the loan amount is deeemed to be riskier for the applicant.
 
 loan purpose
-```{r}
-echo=FALSE
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 ny_hmda_loanPurpose = ny_hmda %>%
 group_by(loan_purpose_name) %>%
 summarize(TotalActionTaken = n()) %>%
@@ -329,8 +307,7 @@ ggplot(ny_hmda_loanPurpose, aes(x = loan_purpose_name,y = TotalActionTaken))+ ge
 -	The most popular loans are for Home purchases at around 190,000 actions taken.  This represents the high amount of home ownership that people have as well as the value that people place in owning a home in NY.
 
 Loan Types
-```{r}
-echo=FALSE
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 ny_hmda_type= ny_hmda %>%
 filter(!is.na(loan_type_name)) %>%
   group_by(loan_type_name) %>%
@@ -344,8 +321,7 @@ ggplot(ny_hmda_type, aes(x = loan_type_name,y = PercentageActionTaken))+ geom_ba
 
 Lien_status distribution by actions
 
-```{r}
-echo=FALSE
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 # lien_status and action taken #
 
 ny_hmdaLean_status=ny_hmda %>%
@@ -356,11 +332,11 @@ ggplot(ny_hmdaLean_status, aes(x = action_taken_name,y = TotalActionTaken))+ geo
 
               
 ```
+-The majority of actions for a loan, except "Not applicable", tend to be where the loan originated.  The second most popular is for application denied by financial institution.  This makes sense as most people go to a financial instituion to get a loan and if the loan is not approved, it most commonly is denied.
 
 Loans Purpose Types Distribution with Race
 
-```{r}
-echo=FALSE
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 ny_hmdaRace_status=ny_hmda %>%
   filter(applicant_race_1 < 7 )%>%
   group_by(applicant_race_name_1, action_taken_name) %>%
@@ -370,10 +346,10 @@ ny_hmdaRace_status
 ggplot(ny_hmdaRace_status, aes(x = action_taken_name,y = PercentageActionTaken),stat="count")+ geom_bar(stat='identity',colour="red")+labs( title = ' race destribution by loan actions')+ geom_bar(stat='identity',colour="red")+labs( title = ' Race and Loan Status')+facet_wrap(~ applicant_race_name_1 , scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))+geom_text(data=ny_hmdaRace_status, aes(label=paste0(round(PercentageActionTaken,1),"%"),y=PercentageActionTaken+3), size=2)
                                                                                             
 ```
+- White and Asian applicants have the easiest time of having a loan originated and lowest incidence of their application being denied by the financial institution.  American Indians and African Americans have the lowest incidence of loan orgination and the highest incidence of the application being denied by the financial institution.
 
 Loans Purpose Types Distribution with Action Types
-```{r }
-echo=FALSE
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 # ny_hmda_purpose and action taken #
 ny_hmda_purpose <- ny_hmda %>%
 group_by(loan_purpose_name,action_taken_name) %>%
@@ -386,11 +362,11 @@ labs( title = 'Loans Purpose Types Distribution with Action Types') +
 facet_wrap(~ loan_purpose_name , scales ="free_y")+theme(axis.text.x = element_text(angle = 30, hjust = 1))+geom_text(data=ny_hmda_purpose, aes(label=paste0(round(PercentageActionTaken,1),"%"), y=PercentageActionTaken+3), size=2)
   
 ```
+- In all forms of loan purpose, by far the most common action is that the loan is successfully originated.  This is followed by the application being denied by the financial institution. Home Purchases have the highest incidence of the loan being originated (63.7%) while Refinancing has the lowest (46.4%).
 
 Relationship between Applicant Income level and Action of Loans
 
-```{r }
-echo=FALSE
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 # income level and action taken #
 ny_hmda_income =  ny_hmda 
 ny_hmda_income[ny_hmda_income$applicant_income_000s <= 60,]$Income.Level = "Level1"
@@ -401,6 +377,7 @@ Table <- table(ny_hmda_income$action_taken_name,ny_hmda_income$Income.Level)
 Prop.Table <- prop.table(Table,2) 
 round(Prop.Table,3)
 ```
+-We can see a relationship between loan origination and denial with income.  With increasing levels of income, the probability of loan orgination increases and denial decreases. With decreasing levels of income, the probability of loan orgination decreases and denial increases.
 
 ##6. Define a variable Loan_Approval
 ```{r }
@@ -437,7 +414,7 @@ The median of the income is 90, people whose income is below 83 are regarded as 
 
 The Loan_Approval only has value 0 or 1, so the mean of Loan_Approval can represent the loan approval rate. According to the ttest, the P-value is less than 5%, so there is significant difference between the approval rate of two group.
 
-8.Discuss the determinants of loan approval with respect to loan amounts, household income, applicant’s gender and race. Clearly state the dependent and independent variables used in your regression analysis. Interpret the findings of this analysis, and note the R-squared.
+##8. First model
 
 ```{r}
 loan_approval_model1<-lm(Loan_Approval~loan_amount_000s+hud_median_family_income+factor(applicant_sex)+factor(applicant_race_1)+isMissingSex+isMissingRace, data=ny_hmApproval, x= TRUE)
@@ -448,7 +425,7 @@ summary(loan_approval_model1)
 According to the regression result, loan_amount, sex and race are statistically significant under 5% significant level. However, hud_median_family_income is not statisticallt significant. The coefficient of loan amount represents the incresing possibility of getting approved if loan amount increases one unit. The base of group in the model is white male, therefore all coefficients of dummy variables represent the difference of the possibility of approval from the base group.
 Noticeably, the R-squared is only 0.0198, showing that our model can not explain the data variation very well. Therefore, the next step is to control omitted variables to make a better model.  
 
-##9
+##9. Best Model
 ```{r}
 #Setting training set and testing set
 set.seed(1)  
@@ -472,10 +449,10 @@ Compared to previous model, the R-square of this model is higher. 0.31 R-square 
 
 
 
-##10
+##10. Customer segmentation
 In our model, there are significant customer segments based on demographics. The first segment is based on gender. On average, the probability for female of getting loan approved is 0.3% less than male, if all else situations are the same. The number is so small that we can makde a conclution that the gender bias is not available. The second segment is based on race. The base is American Indian or Alaska Native. Noticeably, the probability for white people of getting approval is 14.8% higher than the American Indian or Alaska Native and the probability for Asian is 9% higher than them. Therefore, there is racial discrimination for loan application. For all applicants, if the income increases 1000 dollars, the probability of getting approved incrases 0.01%.
 
-##11
+##11. Model interpretation
 We identified a bunch of influencial factors on the approval of loan including loan amount, applicant income, applicant race, applicant sex, loan preapproval status, loan lien status, loan type and purchaser type, though there are several specific dummy variables that are not significant.
 
 The intercept is the probability of loan approval under following conditions: the applicant's sex is male, race is American Indian or Alaska Native, the loan does not require preapproval, the loan is secured by first lien, the loan purpose if for home purchase, the loan type is conventional, the loan was not originated or was not sold in calendar year covered by register. An additional unit in applicant_income_000s would lead the probability of loan approval increase by 0.00011 and an additional an additional unit in loan_amout_000s would lead this probability to increase by 0.00002. Every coefficient of dummy variableS stands for the change of the probability of getting a loan approved when the dummy condition is met. For example, when applicant sex is female, then the probability of getting approval would decrease by 0.0035. 
